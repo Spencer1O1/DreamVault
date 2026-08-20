@@ -62,7 +62,7 @@ list_source_files
 read_source_file(path)
 ```
 
-`list_source_files` returns every project-relative `.foo` path. No contents. The model should list instead of inventing filenames.
+`list_source_files` returns every project-relative `.foo` path. No contents. Compose also marks whether each unit is locked. The model should list instead of inventing filenames.
 
 `read_source_file`:
 

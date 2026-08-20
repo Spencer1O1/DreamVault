@@ -61,7 +61,7 @@ list_source_files
 read_source_file(path)
 ```
 
-`list_source_files` returns project-relative `.foo` paths only. No contents.
+`list_source_files` returns project-relative `.foo` paths only. No contents. Compose also marks whether each unit is locked for this dest. `--lucid` stays paths only.
 
 `read_source_file` returns one unit if it is inside the project. Compose mode: foocode plus that unit’s stored artifacts if any exist. Reading never starts a compose job. The interpreter does not compose and does not attach artifacts.
 

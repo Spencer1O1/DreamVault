@@ -247,6 +247,8 @@ A lock means: do not run the Composer on that unit. Writes to its artifacts are 
 
 Dependents still request the `.foo`. If they only get foocode, they will invent an API that does not match the frozen realization. If they only get `.rs`, they lose the unit.
 
+**Compose `list_source_files`:** each path includes `locked` for this dest. `--lucid` stays paths only.
+
 **Compose mode:** if the provenance store already has a realization for this target, the read returns both — same graph edge:
 
 ```text
