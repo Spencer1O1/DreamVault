@@ -9,7 +9,7 @@ The current Dream architecture goes from resolved `.foo` units to an Interpreter
 
 A later architecture may introduce a precise, typed program representation between Dream meaning and target-language translation.
 
-Gimbal is one candidate for that representation.
+[[Gimbal]] is one candidate for that representation.
 
 Nothing below is a current commitment.
 
@@ -288,7 +288,7 @@ Owns:
 
 ## Gimbal as a Candidate
 
-Dream's long-term notes originally named Gimbal as the formal semantic core.
+Dream's long-term notes originally named [[Gimbal]] as the formal semantic core.
 
 That remains a possible later choice.
 
