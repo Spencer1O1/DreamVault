@@ -175,6 +175,8 @@ Once a formal semantic core exists, Dream may elaborate each `.foo` unit into a 
 
 That future architecture is not decided yet. See [[Projects/Dream/Later Formal Semantic Core|Later Formal Semantic Core]].
 
+A later deterministic `dream now` runtime is also not decided yet. See [[Projects/Dream/Later Interpreter Runtime|Later Interpreter Runtime]]. Do not start that work during the MVP phases.
+
 ## Related
 
 - [[Projects/Dream/MVP|MVP]]

@@ -310,3 +310,4 @@ Do not design Dream's current MVP around that possibility.
 - [[Projects/Dream/Cache and Incremental Semantics|Cache and Incremental Semantics]]
 - [[Projects/Dream/Implementation Plan|Implementation Plan]]
 - [[Projects/Dream/Vision and Principles|Vision and Principles]]
+- [[Projects/Dream/Later Interpreter Runtime|Later Interpreter Runtime]]
