@@ -1,5 +1,5 @@
 **Status:** Preliminary  
-**Purpose:** Define Dream's current execution architecture: resolver, interpreter, composer, builder, and runner.
+**Purpose:** Define Dream's current execution architecture: resolver, interpreter, composer, toolchain, and runner.
 
 ---
 
@@ -16,7 +16,7 @@
                 ┌─────────────┴─────────────┐
                 ▼                           ▼
            `--lucid`                    default
-          Interpreter                 set_builder
+          Interpreter                 set_toolchain
            stdout/stdin                     │
                 │                           ▼
          Program Output            per-unit reconcile
@@ -25,10 +25,10 @@
                                       --build / --run
                                             │
                                             ▼
-                                      Builder / Runner
+                                      Toolchain / Runner
 ```
 
-Builder first, in-place reconcile, the project layer, and target-specific locks are implemented. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
+Toolchain first, in-place reconcile, the project layer, and target-specific locks are implemented. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
 
 A later formal semantic core is not part of it. See [[Projects/Dream/Later Formal Semantic Core|Later Formal Semantic Core]]. A later deterministic `now` runtime is also not part of it. See [[Projects/Dream/Later Interpreter Runtime|Later Interpreter Runtime]].
 
@@ -148,32 +148,32 @@ Target Python may use:
 FastAPI
 ```
 
-Writes in place after the builder is declared. A write names the owning `.foo`. Project-owned files go through Dream’s target layer (Phase 9). The Composer does not get interpreter runtime tools. See [[Projects/Dream/Targets and Composition|Targets and Composition]].
+Writes in place after the toolchain is declared. A write names the owning `.foo`. Project-owned files go through Dream’s target layer (Phase 9). The Composer does not get interpreter runtime tools. See [[Projects/Dream/Targets and Composition|Targets and Composition]].
 
-## The Builder
+## Toolchain execution
 
-The **Builder** operates after composition, and only when `--build` or `--run` is passed.
+Dream execs the declared catalog row after composition, and only when `--build` or `--run` is passed.
 
 Responsibilities:
 
-- identify the relevant local toolchain;
-- validate build instructions;
-- invoke the build process;
-- capture diagnostics;
-- locate resulting artifacts.
+- use the declared catalog row;
+- run the compile argv when that row has one;
+- start the project (`run.argv`);
+- capture compile diagnostics;
+- inherit the terminal for `--run`.
 
 Examples:
 
 ```text
-Rust → cargo build
-Go → go build
-C → clang/gcc/cc
-Python → no native build required
+cargo → cargo build / cargo run
+go → go build / go run .
+python → no compile step; python {entry-stem}.py
+C → later catalog row (no clang run)
 ```
 
-If the declared toolchain is not installed, the Builder fails with a short install hint. It does not install tools.
+If the declared toolchain is not installed, Dream fails with a short install hint. It does not install tools.
 
-The Builder does not decide Dream semantics.
+The toolchain catalog does not decide Dream semantics.
 
 ## The Runner
 

@@ -36,20 +36,20 @@ src/
 ├── source/
 ├── interpreter/
 ├── composer/
-├── builder/
+├── toolchain/
 ├── provenance/    # unit → target artifacts; not an IR
-└── project/       # known-builder manifest layer
+└── project/       # known-toolchain manifest layer
 ```
 
 Do not add a `semantics/` / Gimbal layer until that work is actually started.
 
 ## MVP Phases 1–6 — Done
 
-Interpreter, multi-file, compose (replace `-o`), known builders (asked **before** writes), build/run, bounded repair. Progress: crate `docs/plan.md`.
+Interpreter, multi-file, compose (replace `-o`), known toolchains (asked **before** writes), build/run, bounded repair. Progress: crate `docs/plan.md`.
 
-## Phase 7 — Builder First
+## Phase 7 — Toolchain First
 
-Done. Ask `set_builder` once **before** output writes. That turn is `set_builder` only. `-t` stays an open-ended hint. `unsupported` / no pick → compose only.
+Done. Ask `set_toolchain` once **before** output writes. That turn is `set_toolchain` only. `-t` stays an open-ended hint. `unsupported` / no pick → compose only.
 
 See [[Projects/Dream/Targets and Composition|Targets and Composition]].
 
@@ -65,7 +65,7 @@ See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
 
 ## Phase 9 — Project Layer
 
-Done. Known builders: Dream owns manifests. `set_dependencies` takes `unit` plus names, optional version, and optional features. Package name from entry stem on init only. Dream does not generate target-language wiring. `unsupported`: first writer owns manifest-shaped files.
+Done. Known toolchains: Dream owns manifests. `set_dependencies` takes `unit` plus names, optional version, and optional features. Package name from entry stem on init only. Dream does not generate target-language wiring. `unsupported`: first writer owns manifest-shaped files.
 
 ## Phase 10 — Target-Specific Locks
 

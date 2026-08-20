@@ -70,13 +70,13 @@ execute the Dream program immediately using an LLM as the interpreter.
               ┌─────────────┴─────────────┐
               ▼                           ▼
          `--lucid`                    default
-        Interpreter                 set_builder
+        Interpreter                 set_toolchain
          stdout/stdin                     │
               │                           ▼
        Program Output            per-unit reconcile
                                       --build / --run
 ```
 
-The diagram is the current architecture. v0 used to replace `-o` and ask for the builder last.
+The diagram is the current architecture. v0 used to replace `-o` and ask for the toolchain last.
 
 Gimbal is not part of the current design. A later formal semantic core is discussed separately in [[Projects/Dream/Later Formal Semantic Core|Later Formal Semantic Core]].

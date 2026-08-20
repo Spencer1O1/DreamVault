@@ -311,7 +311,7 @@ should ideally not require:
 - semantic regeneration;
 - target source regeneration unless required.
 
-Only the Builder stage may need to rerun.
+Only toolchain execution may need to rerun.
 
 ## Language as a Service
 

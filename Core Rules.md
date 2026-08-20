@@ -17,13 +17,13 @@
 
 ## Composition Rule
 
-> **The Composer realizes `.foo` units. Dream's project layer owns infrastructure. The Builder invokes toolchains.**
+> **The Composer realizes `.foo` units. Dream's project layer owns infrastructure. Dream execs the declared toolchain.**
 
 ## Target Rule
 
-> **Target generation is open-ended. Builder support is optional.**
+> **Target generation is open-ended. Toolchain support is optional.**
 
-Declare the builder before output writes. Do not infer it from the tree.
+Declare the toolchain before output writes. Do not infer it from the tree.
 
 ## Capability Rule
 

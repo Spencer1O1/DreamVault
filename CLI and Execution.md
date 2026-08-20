@@ -47,7 +47,7 @@ Running:
 dream server.foo -t rust -o ./out
 ```
 
-Declare the builder first (`set_builder` only on that turn), then reconcile into the existing `./out` project. One composition session from the entry. Writes name the owning `.foo`. Unmanaged files stay. There is no `redream` command. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
+Declare the toolchain first (`set_toolchain` only on that turn), then reconcile into the existing `./out` project. One composition session from the entry. Writes name the owning `.foo`. Unmanaged files stay. There is no `redream` command. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
 
 Historical v0 replaced the whole folder after staging.
 
@@ -152,9 +152,9 @@ Example:
 dream hello.foo -t cobol -o ./out
 ```
 
-may successfully produce a COBOL project. After compose settles, Dream asks for a builder; COBOL should be `unsupported`. `--build` / `--run` then do not run.
+may successfully produce a COBOL project. Dream asks for the toolchain before writes; COBOL should be `unsupported`. `--build` / `--run` then do not run.
 
-The builder is the declared toolchain, not a guess from `-t` or from the output tree. **Next:** declare it before any output writes. See [[Projects/Dream/Targets and Composition|Targets and Composition]].
+The toolchain is the declared catalog row, not a guess from `-t` or from the output tree. See [[Projects/Dream/Targets and Composition|Targets and Composition]].
 
 If that toolchain is missing locally, `--build` / `--run` error and tell the user how to install it. Dream does not install it. The composed `-o` folder is already there.
 
@@ -249,7 +249,7 @@ build
 run
 ```
 
-`--run` implies build.
+`--run` implies build. The argv is the catalog row (`cargo run`, `go run .`, `python {entry-stem}.py`). Not from the model. The python script is the entry file stem (`my.foo` → `my.py` in `-o`). Dream does not rename files.
 
 `--lucid` does not use `--run`. Interpretation is already execution.
 
@@ -259,7 +259,7 @@ run
 dream app.foo -t rust -o ./out --fresh
 ```
 
-Reset Dream’s realization: drop provenance, locks, and Dream-owned paths; delete `.dream/`; leave unmanaged files; compose again. Ignores target-specific locks. Not `--clean` (that means “delete build artifacts” in too many toolchains).
+Reset Dream’s realization: drop provenance, locks, Dream-owned paths, and every catalog project path (manifests, lockfiles, build dirs); delete `.dream/`; leave unmanaged files; compose again. Ignores target-specific locks. Not `--clean` (that name already means “delete build artifacts” in too many toolchains).
 
 ## Locks
 
@@ -278,7 +278,7 @@ Targets with release profiles may support:
 dream app.foo -t rust --release
 ```
 
-The Builder maps this to target-native behavior such as:
+Dream maps this to the declared toolchain, such as:
 
 ```bash
 cargo build --release

@@ -1,7 +1,7 @@
 **Status:** Current compose contract through Phase 10.  
 **Purpose:** Pre-Gimbal target artifact ownership, in-place reconciliation, and locks. Implementers should follow this plus [[Projects/Dream/Core Rules|Core Rules]]. Do not invent a target-independent IR.
 
-[[Projects/Dream/MVP|MVP]] is the historical v0 (replace `-o`, builder after writes). The crate no longer does that.
+[[Projects/Dream/MVP|MVP]] is the historical v0 (replace `-o`, toolchain after writes). The crate no longer does that.
 
 ---
 
@@ -44,7 +44,7 @@ Every path under `-o` is one of:
 3. Unmanaged      — no Dream provenance; user-owned by default
 ```
 
-Toolchain outputs (`target/`, `Cargo.lock`, …) are build state, not semantic artifacts. Do not treat them as Composer output. With no provenance store, any file outside `.dream/` means `-o` is occupied (`--fresh` or an empty directory). Do not skip leftover toolchain dirs by guessing names.
+Each catalog toolchain lists its **project files**: the manifest Dream writes, plus lockfiles and build dirs the toolchain creates (`Cargo.lock`, `target/`, `go.sum`, …). Those are project-owned for wipe. They are not Composer artifacts and not in the provenance map. Do not guess names at scan time — the catalog is the list. With no provenance store, any file outside `.dream/` means `-o` is occupied (`--fresh` or an empty directory).
 
 ```text
 owner = Unit(path)
@@ -89,19 +89,21 @@ A unit may also own generated resources (`assets/generated-background.svg`). Man
 
 ---
 
-## Builder First
+## Toolchain First
 
 `-t` stays an open-ended compose hint.
 
-**Declare the builder before any output writes.** That turn is `set_builder` only — no `dream_error`, no write tools. v0 asked after the write loop; that is gone.
+**Declare the toolchain before any output writes.** That turn is `set_toolchain` only — no `dream_error`, no write tools. v0 asked after the write loop; that is gone.
+
+The `set_toolchain` result is how Dream execs that catalog row. `run.argv` is the start command. `build.argv` is present only when there is a compile step (python omits it). If Dream owns the dest entry path (python: `{entry-stem}.py`), the result includes `entry`. Cargo/Go have no `entry` — their toolchains find the program. `unsupported` returns only the name.
 
 ```text
 entry .foo
     ↓
-set_builder (once)
+set_toolchain (once)
     ↓
-known builder → Dream may init / load project-owned state
-unsupported  → compose still allowed; no --build / --run / repair
+known toolchain → Dream may init / load project-owned state
+unsupported     → compose still allowed; no --build / --run / repair
     ↓
 reconcile units
     ↓
@@ -110,9 +112,9 @@ reconcile project-owned state
 --build / --run if asked
 ```
 
-Do not infer the builder from the tree. Do not take argv from the model.
+Do not infer the toolchain from the tree. Do not take argv from the model.
 
-Known builders get structured project tools. Unknown / `unsupported` targets use a generic write fallback. **Ownership still applies.** Do not give the Composer unrestricted filesystem or shell access to support a weird `-t`.
+Known toolchains get structured project tools. Unknown / `unsupported` targets use a generic write fallback. **Ownership still applies.** Do not give the Composer unrestricted filesystem or shell access to support a weird `-t`.
 
 ---
 
@@ -157,7 +159,7 @@ dream app.foo -t rust -o ./out
 means: reconcile this source graph into the **existing** target project, respecting locks and ownership.
 
 ```text
-declare builder
+declare toolchain
     ↓
 load existing target provenance
     ↓
@@ -219,7 +221,7 @@ dream app.foo -t rust -o ./out --fresh
 
 Reset this target realization and compose again. Ignore current provenance and target-specific locks.
 
-Drop provenance, locks, and **Dream-owned** paths (unit + project), then delete `.dream/`. Leave unmanaged files (`README.md`, `logo.png`, …). Leftover toolchain dirs (`target/`, …) are not in the map, so they survive and make the dest occupied on the next no-store open — pass `--fresh` again or empty the folder. The user can `rm -rf` `-o` if they want an empty folder.
+Drop provenance, locks, and **Dream-owned** paths (unit + project), then delete `.dream/`. Also drop every catalog project path in `-o` (manifests, lockfiles, build dirs), even if the current store does not list them — so `--fresh -t go` does not keep `Cargo.toml`, `Cargo.lock`, or `target/`. Leave unmanaged files (`README.md`, `logo.png`, …) and source files not in the map. Those leftovers make the dest occupied on the next no-store open. The user can `rm -rf` `-o` if they want an empty folder.
 
 Not `--clean`. “Clean” already means “delete build artifacts” in too many toolchains.
 
@@ -288,7 +290,9 @@ Repair rejects `set_dependencies`.
 
 ### Package name
 
-On first init of a known builder, Dream sets the package name from the **entry file stem** (`multifile.foo` → `multifile`). Not a tool. Later reconciles do not overwrite an existing name (a user rename stays).
+On first init of a known toolchain, Dream sets the package name from the **entry file stem** (`multifile.foo` → `multifile`). Not a tool. Later reconciles do not overwrite an existing name (a user rename stays).
+
+Python `--run` is `python {stem}.py` in `-o` (`my.foo` → `my.py`). Same stem. Dream does not rename a composed file. If that script is missing, run fails.
 
 ### How files find each other in the target
 
@@ -304,7 +308,7 @@ No project layer and no `set_dependencies`. All Composer writes are unit-owned. 
 
 Build runs **after** the composition session settles. Repair does not pick a unit by guessing from rustc paths. The owner of an existing path is the map, not the model.
 
-It is a new session with the toolchain diagnostics. Same builder. Writes stay in `-o`.
+It is a new session with the toolchain diagnostics. Same toolchain. Writes stay in `-o`.
 
 Allowed: overwrite a path that provenance already assigns to an **unlocked** unit. The owner is the map, not the model.
 

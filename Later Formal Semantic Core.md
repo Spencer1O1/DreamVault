@@ -54,7 +54,7 @@ Target Translation
     ↓
 Target Project
     ↓
-Builder
+Toolchain
 ```
 
 ## Why a Formal Core Might Matter
@@ -235,7 +235,7 @@ Target-Language Translation
      ↓
 Target Project
      ↓
-Builder
+Toolchain
      ↓
 Built Artifact
      ↓
@@ -276,11 +276,11 @@ Owns:
 
 - formal program → target semantics/source.
 
-### Builder
+### Toolchain
 
 Owns:
 
-- target toolchain execution.
+- catalog toolchain execution.
 
 ### Runner
 

@@ -1,5 +1,5 @@
 **Status:** Historical v0  
-**Purpose:** The first CLI that was built (replace `-o`, builder after writes). Do not treat this as the current compose contract. Current compose is [[Projects/Dream/Artifact Ownership|Artifact Ownership]] through Phase 8. Interpreter behavior in this file still matches the crate (`--lucid`; v0 used a `now` subcommand). Plus [[Projects/Dream/Core Rules|Core Rules]].
+**Purpose:** The first CLI that was built (replace `-o`, toolchain after writes). Do not treat this as the current compose contract. Current compose is [[Projects/Dream/Artifact Ownership|Artifact Ownership]] through Phase 8. Interpreter behavior in this file still matches the crate (`--lucid`; v0 used a `now` subcommand). Plus [[Projects/Dream/Core Rules|Core Rules]].
 
 The Rust crate lives in a **separate workspace**, not this notes vault.
 
@@ -16,7 +16,7 @@ dream [--strict] [--no-warn] <file.foo> -t <target> -o <dir> --run
 
 - `--lucid` interprets. Observable output is whatever the model sends through `stdout`.
 - Default `dream` **composes only**. It does not build or run.
-- `--build` composes, then builds if Dream knows a toolchain for the declared builder.
+- `--build` composes, then builds if Dream knows the declared toolchain.
 - `--run` composes, builds, and runs.
 - `--strict` is a stricter prompt. It is not a parser or linter.
 - `--no-warn` treats toolchain warnings as a failed build. It is compose-only.
@@ -76,7 +76,7 @@ Later, same family: `read_file`, `write_file`, `http_request`. Still executed by
 - path must stay under the output root
 - after the compose loop settles, Dream replaces `-o` with the staged tree
 
-**v0 asked `set_builder` after the write loop.** The crate now declares the builder first and writes in place. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
+**v0 asked `set_toolchain` after the write loop.** The crate now declares the toolchain first and writes in place. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
 
 The Composer does not get `stdout`, `stdin`, or data-file tools. It is writing a project, not running the program.
 

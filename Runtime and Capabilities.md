@@ -77,7 +77,7 @@ remove_output_file(unit, path)
 set_dependencies(unit, dependencies)
 ```
 
-Writes in place. `unit` is the project-relative `.foo` that owns the path. Dream checks the claim. `set_dependencies` is for known builders only; Dream owns the manifest. Unmanaged paths are rejected. `write_output_file` is a whole-file replace. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
+Writes in place. `unit` is the project-relative `.foo` that owns the path. Dream checks the claim. `set_dependencies` is for known toolchains only; Dream owns the manifest. Unmanaged paths are rejected. `write_output_file` is a whole-file replace. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
 
 Later, same composer side: research tools (indexes, docs) and targeted / LSP edits. Not built. Not interpreter runtime. See [[Projects/Dream/Later Composer Tools|Later Composer Tools]].
 
