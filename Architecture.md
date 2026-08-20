@@ -10,9 +10,11 @@
                               │
                               ▼
                        Source Resolver
+                         project root
+                         path sandbox
                               │
                               ▼
-                    Source Dependency Graph
+                         Entrypoint
                               │
                 ┌─────────────┴─────────────┐
                 │                           │
@@ -20,6 +22,12 @@
              `now`                      default
           Interpreter                   Composer
                 │                           │
+                │     read_source_file      │
+                └──────────►────────────────┘
+                              │
+                recorded .foo dependency set
+                              │
+                ┌─────────────┴─────────────┐
                 ▼                           ▼
          Program Output                Target Project
                                             │
@@ -45,29 +53,20 @@ Responsibilities:
 
 - identify the project root;
 - locate the entrypoint;
-- parse canonical imports;
 - normalize paths;
 - enforce project boundaries;
-- detect missing imports;
-- detect cycles;
-- construct the source dependency graph;
-- provide source contents to the semantic system.
+- serve `.foo` source through `read_source_file`;
+- reject paths outside the project;
+- detect missing files and cycles during requests;
+- remember the discovered dependency set.
 
 The Source Resolver does not determine program meaning.
 
-## Source Resolution Must Be Deterministic
-
-Dream should not ask the model:
-
-> What files do you think this program imports?
-
-Canonical imports should be mechanically discoverable.
-
-This ensures the project dependency graph can be constructed before semantic interpretation.
+It does not parse an import syntax.
 
 ## Source Access Tool
 
-The semantic system may receive source through a constrained tool such as:
+The semantic system receives other units through a constrained tool:
 
 ```text
 read_source_file(path)
@@ -77,33 +76,29 @@ Dream validates the path and returns only allowed project source.
 
 The model does not get arbitrary filesystem access.
 
-## No Semantic Execution During Discovery
+Which files are needed is part of meaning. The model decides. Dream records the result.
 
-Dream should maintain this invariant:
+See [[Projects/Dream/Projects and Imports|Projects and Imports]].
 
-> **Source discovery completes before interpretation or composition begins.**
+## Request Loop, Not a Prelude
 
-Do not:
+Dream should not require a complete source graph before interpretation begins.
 
-```text
-execute half of main.foo
-↓
-discover another file
-↓
-load it
-↓
-reinterpret previous execution
-```
-
-Instead:
+This is allowed:
 
 ```text
-resolve source graph
+interpret main.foo
 ↓
-gather required units
+model requests users/active.foo
 ↓
-interpret or compose
+Dream serves it
+↓
+continue
 ```
+
+Do not emit a finished target project, or treat a unit as fully dreamed, until that unit's source requests have settled.
+
+A later run can skip the loop when the unit's source hash still matches a recorded dependency set.
 
 ## The Composer
 
@@ -211,11 +206,11 @@ DreamError: ...
 Examples:
 
 ```text
-DreamError: imported source `./users/foo.foo` does not exist.
+DreamError: requested source `users/foo.foo` does not exist.
 ```
 
 ```text
-DreamError: import escapes project root.
+DreamError: source request escapes project root.
 ```
 
 ```text

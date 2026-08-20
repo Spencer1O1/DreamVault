@@ -194,7 +194,7 @@ Exactly what constitutes a stable interface depends on the later formal semantic
 
 ## Dependency Interface Hashes
 
-A unit may depend on the interfaces of imported units rather than their complete implementation semantics.
+A unit may depend on the interfaces of the `.foo` files it requested rather than their complete implementation semantics.
 
 If dependency implementation changes but its exported interface hash remains the same, dependent semantic results may remain valid.
 

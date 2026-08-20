@@ -186,7 +186,7 @@ users/oldest.foo
 formal fragment O
 ```
 
-The semantic dependency graph may be richer than the source import graph, but it should remain rooted in deterministic file-level unit identity.
+The semantic dependency graph may be richer than the recorded source-request graph, but it should remain rooted in deterministic file-level unit identity.
 
 ## Avoid Inventing a Separate IR Too Early
 
@@ -249,8 +249,8 @@ optional Runner
 Owns:
 
 - files;
-- imports;
-- project graph.
+- path sandbox;
+- recorded source-request graph.
 
 ### Dream Semantic Frontend
 

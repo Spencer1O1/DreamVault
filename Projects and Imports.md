@@ -1,11 +1,11 @@
 **Status:** Preliminary  
-**Purpose:** Define Dream project structure, imports, and the deterministic source graph.
+**Purpose:** Define Dream project structure and how one `.foo` file uses another.
 
 ---
 
 ## Project Structure
 
-A Dream project is fundamentally a graph of semantic units.
+A Dream project is a directory of semantic units.
 
 Example:
 
@@ -21,13 +21,86 @@ my-project/
 └── dream.toml
 ```
 
-Each `.foo` file is independently addressable.
+Each `.foo` file is independently addressable by its project-relative path.
 
-Imports define relationships between those units.
+There is no import grammar.
 
-## Deterministic vs Fuzzy Structure
+## How Files Find Each Other
 
-Dream deliberately places deterministic structure around fuzzy semantics.
+If `main.foo` says to use the active-users behavior, the model may request:
+
+```text
+users/active.foo
+```
+
+Dream serves that file if it is inside the project.
+
+The programmer can mention another unit however they want:
+
+```text
+use users/active.foo
+```
+
+```text
+filter with the active-users thing
+```
+
+```text
+import "./users/active.foo"
+```
+
+Those are all just meaning.
+
+The interpreter decides that another semantic unit is needed and asks Dream for it.
+
+## Source Access Tool
+
+The semantic system receives other units through a constrained tool:
+
+```text
+read_source_file(path)
+```
+
+Dream:
+
+- resolves the path against the project root;
+- rejects anything outside the project;
+- returns only that `.foo` source;
+- records that the current unit now depends on that path.
+
+The model does not get arbitrary filesystem access.
+
+Requesting `users/active.foo` is source resolution.
+
+Reading `users.json` at runtime is program execution.
+
+Do not conflate them. See [[Projects/Dream/Runtime and Capabilities|Runtime and Capabilities]].
+
+## The Graph Is an Output
+
+The first time a unit is dreamed, Dream does not already know its dependencies.
+
+```text
+interpret or compose a .foo unit
+    ↓
+model requests other .foo files
+    ↓
+Dream serves them if allowed
+    ↓
+record the discovered dependency set
+```
+
+That recorded set *is* the source graph for later runs.
+
+If the unit's source has not changed, Dream can reuse the accepted meaning and the recorded dependencies without asking the model which files it needs.
+
+This is the same move as file-level units:
+
+- the filesystem gives unit identity;
+- the model discovers relationships;
+- the cache remembers them until the source changes.
+
+## What Stays Mechanical
 
 ```text
 DETERMINISTIC
@@ -35,80 +108,25 @@ DETERMINISTIC
 project root
 file paths
 .foo unit identity
-imports
-dependency graph
+path sandbox
+recorded dependency set after a dream
 configuration
 
 FUZZY
 ────────────────────────
 meaning of each .foo file
+which other units a file needs, until that has been recorded
 ```
 
-The source graph exists independently of the LLM.
+Dream should not invent an `import` keyword just to make the first graph cheap.
 
-It should be possible to construct and inspect it mechanically.
+## Missing Files and Cycles
 
-## Imports
+If the model requests a file that does not exist, Dream reports that.
 
-Imports are one of the intentionally formal parts of Dream.
+If A requests B and B requests A, Dream detects the cycle during the request loop.
 
-Canonical syntax:
-
-```text
-import "./users/active.foo"
-```
-
-Possible alias syntax:
-
-```text
-import "./users/active.foo" as active_users
-```
-
-Exact namespace rules may evolve, but import paths should remain structurally deterministic.
-
-Imports operate on whole semantic units.
-
-## Import Semantics
-
-If:
-
-```text
-main.foo
-```
-
-contains:
-
-```text
-import "./users/active.foo"
-```
-
-then `main.foo` depends on the semantic unit represented by:
-
-```text
-users/active.foo
-```
-
-This relationship is part of Dream's source dependency graph.
-
-Dream should never need an LLM to determine whether the import exists or what file it refers to.
-
-## Source Dependency Graph
-
-Example:
-
-```text
-main.foo
-├── users/load.foo
-├── users/active.foo
-│   └── models/user.foo
-└── users/oldest.foo
-```
-
-The graph is deterministic.
-
-The semantics inside each node may initially require an LLM.
-
-This distinction is central to Dream.
+These checks happen while units are being dreamed, not by parsing a formal prelude.
 
 ## Project Root
 
@@ -128,19 +146,11 @@ name = "my-project"
 entry = "main.foo"
 ```
 
-Potential future project settings:
-
-```toml
-[project]
-name = "my-project"
-entry = "main.foo"
-default_target = "rust"
-```
-
 A manifest is not required for the earliest prototype.
 
 ## Related
 
 - [[Projects/Dream/Semantic Units|Semantic Units]]
 - [[Projects/Dream/Architecture|Architecture]]
-- [[Projects/Dream/CLI and Execution|CLI and Execution]]
+- [[Projects/Dream/Language and Source|Language and Source]]
+- [[Projects/Dream/Cache and Incremental Semantics|Cache and Incremental Semantics]]

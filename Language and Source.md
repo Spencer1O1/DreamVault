@@ -65,11 +65,8 @@ There is no comment syntax.
 Dream docs may show readable pseudocode such as:
 
 ```text
-import "./users/active.foo"
-
-users = load users
-
-users = active(users)
+load the users
+keep the active ones
 
 for user in users:
     print user.name
@@ -77,7 +74,7 @@ for user in users:
 
 That is an example, not a required style.
 
-The only source-level thing that needs a mechanical form is how one file names another file. See [[Projects/Dream/Projects and Imports|Projects and Imports]].
+Using another `.foo` file is the same: the programmer mentions it however they want, and the model requests the file. See [[Projects/Dream/Projects and Imports|Projects and Imports]].
 
 ## Related
 

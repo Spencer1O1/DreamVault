@@ -121,11 +121,8 @@ Example entrypoint:
 ```text
 main.foo
 
-import "./users/load.foo"
-import "./users/active.foo"
-
-users = load()
-users = active(users)
+load the users
+keep the active ones
 
 print each user's name
 ```
@@ -212,16 +209,13 @@ main.foo
 
 is itself one semantic unit.
 
-It may depend on many imported units.
+It may use many other units.
 
 Its job is typically composition:
 
 ```text
-import "./users/load.foo"
-import "./users/active.foo"
-
-users = load()
-users = active(users)
+load the users
+keep the active ones
 
 print each user's name
 ```

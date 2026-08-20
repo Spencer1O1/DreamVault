@@ -13,7 +13,7 @@
 
 ## Multi-File Rule
 
-> **Imports define the deterministic dependency graph between semantic units.**
+> **A `.foo` unit may use other `.foo` units. The model requests those files. Dream records the resulting graph.**
 
 ## Composition Rule
 
@@ -49,7 +49,7 @@
 
 ## Structural Determinism
 
-> **Dream's project graph is determined mechanically, not by the LLM.**
+> **Unit identity and project boundaries are mechanical. Which files a unit uses is discovered, then persisted.**
 
 ## Related
 

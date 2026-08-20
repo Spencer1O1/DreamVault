@@ -45,23 +45,23 @@ into:
 LLM controls a bounded runtime
 ```
 
-## Imports Are Not Runtime File Access
+## Source Requests Are Not Runtime File Access
 
 These are separate:
 
 ```text
-import "./users/load.foo"
+read_source_file("users/load.foo")
 ```
 
 and:
 
 ```text
-read "./users.json"
+read users.json
 ```
 
-The first is source resolution.
+The first is the interpreter asking Dream for another semantic unit.
 
-The second is program execution.
+The second is the program reading data at runtime.
 
 Do not conflate them.
 

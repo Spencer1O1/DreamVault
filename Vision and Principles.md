@@ -84,13 +84,14 @@ DETERMINISTIC
 project root
 file paths
 .foo unit identity
-imports
-dependency graph
+path sandbox
+recorded dependencies after a dream
 configuration
 
 FUZZY
 ────────────────────────
 meaning of each .foo file
+which other units a file needs, until that has been recorded
 ```
 
 After semantic interpretation, Dream should eventually return to a deterministic representation:

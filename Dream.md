@@ -62,29 +62,19 @@ execute the Dream program immediately using an LLM as the interpreter.
                             │
                             ▼
                      Source Resolver
-                            │
-                            ▼
-                .foo Semantic Unit Graph
+                       project root
+                       path sandbox
                             │
               ┌─────────────┴─────────────┐
               │                           │
               ▼                           ▼
            `now`                      default
         Interpreter                   Composer
-              │                           │
-              ▼                           ▼
-       Program Output                Target Project
-                                          │
-                                          ▼
-                                       Builder
-                                          │
-                                          ▼
-                                    Built Artifact
-                                          │
-                                       --run
-                                          │
-                                          ▼
-                                        Runner
+              │     read_source_file      │
+              └──────────►────────────────┘
+                            │
+                     Program Output
+                     or Target Project
 ```
 
 Gimbal is not part of the current design. A later formal semantic core is discussed separately in [[Projects/Dream/Later Formal Semantic Core|Later Formal Semantic Core]].

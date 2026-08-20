@@ -33,6 +33,33 @@ Exact CLI may change.
 
 The underlying unit remains the `.foo` file.
 
+## File Requests Do Not Block Locking
+
+A lock records the *result* of a dream, not a parsed import list.
+
+After `main.foo` is dreamed, Dream already has:
+
+```text
+accepted meaning
+public interface
+requested files
+source hash
+```
+
+Locking that unit freezes those. Later runs reuse them. The model is not asked again which files it would like.
+
+That is why informal file requests still allow locking:
+
+- unit identity is the path, which is mechanical;
+- the first dream produces meaning and a dependency set;
+- the lock persists both.
+
+`dream lock .` means: persist every unit that has already been dreamed. Units that have never been dreamed are dreamed first, or left unlocked.
+
+Informal dependencies make locking *more* important, not less. Without a formal `import` line, the choice “this unit uses `users/active.foo`” *is* part of accepted meaning. Locking is how that choice stops drifting.
+
+If a requested dependency later becomes unusable (missing file, broken interface), the lock is stale. A lock must never force an invalid result.
+
 ## Project Locking
 
 Possible:

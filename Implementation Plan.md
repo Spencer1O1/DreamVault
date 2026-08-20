@@ -35,7 +35,7 @@ src/
 │   ├── project.rs
 │   ├── unit.rs
 │   ├── resolver.rs
-│   └── imports.rs
+│   └── files.rs
 ├── interpreter/
 ├── composer/
 ├── builder/
@@ -69,15 +69,15 @@ Single-file support is acceptable for the first spike.
 
 ## MVP Phase 2 — Multi-File Resolution
 
-Add canonical imports.
+Let the model request other `.foo` files.
 
 Implement:
 
 - project root;
 - path normalization;
-- recursive imports;
-- cycle detection;
-- source graph construction.
+- sandboxed `read_source_file`;
+- request-loop cycle detection;
+- recorded dependency sets.
 
 Each `.foo` file is one semantic unit from this phase onward.
 
@@ -92,7 +92,7 @@ dream main.foo -t rust -o ./out
 Pipeline:
 
 ```text
-Dream Source Graph
+Dream units
     ↓
 Composer
     ↓

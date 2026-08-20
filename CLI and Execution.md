@@ -47,10 +47,9 @@ dream server.foo -t rust -o ./out
 
 means:
 
-1. resolve the Dream source graph;
-2. gather required semantic units;
-3. determine their intended semantics;
-4. compose a complete Rust project;
+1. start from the entry `.foo` file;
+2. determine meaning, requesting other `.foo` units as needed;
+3. compose a complete Rust project;
 5. write it to `./out`;
 6. build it when appropriate;
 7. optionally run it.
@@ -67,10 +66,9 @@ dream now main.foo
 
 means:
 
-1. resolve the Dream source graph;
-2. gather all required `.foo` units;
-3. execute the resolved program directly using the LLM interpreter;
-4. return observable program output.
+1. start from the entry `.foo` file;
+2. execute it with the LLM interpreter, requesting other `.foo` units as needed;
+3. return observable program output.
 
 No target language is involved.
 
