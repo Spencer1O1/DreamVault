@@ -30,14 +30,14 @@ dream [OPTIONS] <FILE>
 and:
 
 ```bash
-dream now [OPTIONS] <FILE>
+dream --lucid [OPTIONS] <FILE>
 ```
 
 Default mode **composes** a target project and stops.
 
 It does not build or run unless asked.
 
-`now` directly interprets the Dream program.
+`--lucid` directly interprets the Dream program.
 
 ## Default Mode
 
@@ -53,7 +53,7 @@ Historical v0 replaced the whole folder after staging.
 
 It does not build unless `--build` or `--run` is passed.
 
-Compose prints each tool call on stderr (name and path, not file contents). `dream now` does not.
+Compose prints each tool call on stderr (name and path, not file contents). `--lucid` does not.
 
 The generated project is a first-class artifact.
 
@@ -62,7 +62,7 @@ The generated project is a first-class artifact.
 Running:
 
 ```bash
-dream now main.foo
+dream --lucid main.foo
 ```
 
 means:
@@ -75,9 +75,9 @@ The model's chat text is discarded.
 
 No target language is involved.
 
-## Why `now`
+## Why `--lucid`
 
-`dream now` preserves the original Dream idea:
+`--lucid` preserves the original Dream idea:
 
 ```text
 pseudocode
@@ -251,7 +251,7 @@ run
 
 `--run` implies build.
 
-`dream now` does not use `--run`. Interpretation is already execution.
+`--lucid` does not use `--run`. Interpretation is already execution.
 
 ## `--fresh`
 

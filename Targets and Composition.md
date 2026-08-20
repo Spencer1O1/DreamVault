@@ -73,7 +73,7 @@ The Composer should not receive unrestricted shell or `-o` access.
 
 Writes only unit-owned artifacts in place. A write names the owning `.foo`. Manifests go through target-aware project tools (Phase 9). Unknown files stay. `--fresh` is the wipe. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
 
-The Composer does not get `stdout`, `stdin`, or data-file tools. Those belong to `dream now`.
+The Composer does not get `stdout`, `stdin`, or data-file tools. Those belong to `--lucid`.
 
 Default compose does not build. See `--build` and `--run` in [[Projects/Dream/CLI and Execution|CLI and Execution]].
 

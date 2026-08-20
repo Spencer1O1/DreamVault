@@ -29,7 +29,7 @@ Chat text is discarded. It is not program output.
 
 Do not give one `write_file` to every mode.
 
-### Source — both `now` and compose
+### Source — both `--lucid` and compose
 
 ```text
 list_source_files
@@ -40,9 +40,9 @@ A programmer can look at the folder. The interpreter can too.
 
 `list_source_files` returns `.foo` paths under the project root. Paths only.
 
-`read_source_file` returns one semantic unit, sandboxed to the project, and records the dependency. Always the `.foo` text. It never starts a compose job. In compose mode, if the provenance store already has artifacts for that unit, the read attaches them. `dream now` returns `{ path, source }` only. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
+`read_source_file` returns one semantic unit, sandboxed to the project, and records the dependency. Always the `.foo` text. It never starts a compose job. In compose mode, if the provenance store already has artifacts for that unit, the read attaches them. `--lucid` returns `{ path, source }` only. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
 
-### Interpreter runtime — `dream now` only
+### Interpreter runtime — `--lucid` only
 
 v0:
 

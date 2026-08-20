@@ -15,7 +15,7 @@
                               │
                 ┌─────────────┴─────────────┐
                 ▼                           ▼
-             `now`                      default
+           `--lucid`                    default
           Interpreter                 set_builder
            stdout/stdin                     │
                 │                           ▼

@@ -27,7 +27,7 @@ Source-oriented: the user locks the `.foo` file. Dream already knows the generat
 
 Do not invent target-independent locked meaning before Gimbal.
 
-`read_source_file` still returns the `.foo`. In compose mode, if the store already has a realization, the result includes those artifact paths and contents. Reading never starts a compose job. The interpreter (`dream now`) does not attach artifacts.
+`read_source_file` still returns the `.foo`. In compose mode, if the store already has a realization, the result includes those artifact paths and contents. Reading never starts a compose job. The interpreter (`--lucid`) does not attach artifacts.
 
 See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
 

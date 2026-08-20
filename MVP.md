@@ -1,5 +1,5 @@
 **Status:** Historical v0  
-**Purpose:** The first CLI that was built (replace `-o`, builder after writes). Do not treat this as the current compose contract. Current compose is [[Projects/Dream/Artifact Ownership|Artifact Ownership]] through Phase 8. Interpreter `dream now` in this file still matches the crate. Plus [[Projects/Dream/Core Rules|Core Rules]].
+**Purpose:** The first CLI that was built (replace `-o`, builder after writes). Do not treat this as the current compose contract. Current compose is [[Projects/Dream/Artifact Ownership|Artifact Ownership]] through Phase 8. Interpreter behavior in this file still matches the crate (`--lucid`; v0 used a `now` subcommand). Plus [[Projects/Dream/Core Rules|Core Rules]].
 
 The Rust crate lives in a **separate workspace**, not this notes vault.
 
@@ -8,13 +8,13 @@ The Rust crate lives in a **separate workspace**, not this notes vault.
 ## CLI
 
 ```bash
-dream now [--strict] <file.foo>
+dream [--lucid] [--strict] <file.foo>
 dream [--strict] [--no-warn] <file.foo> -t <target> -o <dir>
 dream [--strict] [--no-warn] <file.foo> -t <target> -o <dir> --build
 dream [--strict] [--no-warn] <file.foo> -t <target> -o <dir> --run
 ```
 
-- `dream now` interprets. Observable output is whatever the model sends through `stdout`.
+- `--lucid` interprets. Observable output is whatever the model sends through `stdout`.
 - Default `dream` **composes only**. It does not build or run.
 - `--build` composes, then builds if Dream knows a toolchain for the declared builder.
 - `--run` composes, builds, and runs.
@@ -51,7 +51,7 @@ Dream owns every capability. The model only asks. Chat text is discarded.
 
 A programmer can look at the folder. The model may do the same. It must not guess filenames without listing, and it must not require an `import` keyword.
 
-### Interpreter runtime — `dream now` only
+### Interpreter runtime — `--lucid` only
 
 `stdout(text)`
 

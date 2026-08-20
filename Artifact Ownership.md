@@ -174,7 +174,7 @@ Normal `dream` must **not** `rm -rf` `-o`.
 
 `dream <entry.foo>` starts **one** conversation. The entry is the discovery root, not the owner of every write. `.foo` remains the semantic, lock, and provenance unit. It is not the LLM invocation unit.
 
-`read_source_file` never starts a compose job. It returns the foocode immediately, plus that unit’s artifacts if the provenance store already has them (last accepted realization, locked or not). `dream now` returns `{ path, source }` only.
+`read_source_file` never starts a compose job. It returns the foocode immediately, plus that unit’s artifacts if the provenance store already has them (last accepted realization, locked or not). `--lucid` returns `{ path, source }` only.
 
 A `.foo` never read from the entry is not composed. Its artifacts stay.
 
@@ -260,7 +260,7 @@ artifacts:
 
 The model may read those artifacts. It may not write locked ones. No extra tool.
 
-**`dream now`:** locks are `-t`-specific. The interpreter has no artifact set. It gets `{ path, source }` only. No compose.
+**`--lucid`:** locks are `-t`-specific. The interpreter has no artifact set. It gets `{ path, source }` only. No compose.
 
 After Gimbal, a lock should freeze formal meaning; provenance still tracks the translated files.
 

@@ -1,7 +1,7 @@
 **Status:** Phase list only. Do not track checkboxes here.  
 **Purpose:** Phases 1–9 are implemented. Next is target-specific locks (Phase 10). Not a formal semantic core.
 
-The crate is a **separate workspace**, not this notes vault. `dream now`: [[Projects/Dream/MVP|MVP]]. Compose: [[Projects/Dream/Artifact Ownership|Artifact Ownership]] through Phase 9. Progress is `docs/plan.md` in the crate.
+The crate is a **separate workspace**, not this notes vault. `--lucid`: [[Projects/Dream/MVP|MVP]] interpreter. Compose: [[Projects/Dream/Artifact Ownership|Artifact Ownership]] through Phase 9. Progress is `docs/plan.md` in the crate.
 
 ---
 
