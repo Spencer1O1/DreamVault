@@ -45,7 +45,7 @@ Responsibilities:
 - list project `.foo` paths through `list_source_files`;
 - serve `.foo` source through `read_source_file`;
 - reject paths outside the project;
-- detect missing files and cycles during requests;
+- detect missing files during requests; re-reading a unit is fine;
 - remember the discovered dependency set.
 
 The Source Resolver does not determine program meaning.

@@ -101,7 +101,7 @@ At least:
 - requested source does not exist
 - source request escapes project root
 - output write escapes `-o`
-- cycle in source requests
+- (historical) cycle in source requests — a request-stack abort; do not treat a re-read as a cycle
 - program needs a runtime capability v0 does not have
 - `--strict` and the model is too unsure to continue
 - build or run failed

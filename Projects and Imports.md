@@ -127,7 +127,7 @@ Dream should not invent an `import` keyword just to make the first graph cheap.
 
 If the model requests a file that does not exist, Dream reports that.
 
-If A requests B and B requests A, Dream detects the cycle during the request loop.
+If A requests B and B requests A, that is two reads, not a process error. Re-reading a unit (including the entry) is fine. The session records a set of units that were read. A request stack that treated last-read as the parent used to abort compose when the model re-read the entry for its artifacts.
 
 These checks happen while units are being dreamed, not by parsing a formal prelude.
 
