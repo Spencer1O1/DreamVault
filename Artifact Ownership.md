@@ -193,6 +193,8 @@ Ownership is never inferred from the last read or from the entry.
 
 When the session settles, Dream reconciles each unit that wrote this run.
 
+`write_output_file` is a whole-file replace. Targeted / LSP edits are later. See [[Projects/Dream/Later Composer Tools|Later Composer Tools]].
+
 ### No provenance
 
 Missing or empty `-o`: first writes register under the claimed unit.
@@ -276,7 +278,7 @@ Project-owned files (`Cargo.toml`, `go.mod`, `pyproject.toml`) are **not** freef
 
 One tool. It takes `unit` (project-relative `.foo`) plus that unit’s full dependency list. Dream checks the same ownership as a write: the unit exists and is the entry or was read this run. The list **replaces** that unit’s dependencies when the session settles. Units that do not call it keep their previous list.
 
-Each entry is a **package name** plus optional **features**. Dream chooses the version. The model does not pass semver.
+Each entry is a **package name**, optional **version**, and optional **features**. Dream writes the manifest. Conflicting versions for the same package fail at union. A pin plus an omitted version uses the pin. An omitted version is unconstrained (`*` for Cargo; no `require` stub for Go). Unconstrained is not “current”: Dream does not look up latest and pin it. Looking up APIs and package versions is later research tools. See [[Projects/Dream/Later Composer Tools|Later Composer Tools]].
 
 Project deps are the union of every unit’s list. Dream retracts a dep only if Dream installed it and no unit still lists it. User-added deps with no unit listing stay.
 

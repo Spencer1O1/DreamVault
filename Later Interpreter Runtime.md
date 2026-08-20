@@ -85,13 +85,15 @@ A future execution plan can include `read_source_file` as an operation. Complete
 
 ## Errors
 
-Keep the conceptual split:
+Keep the conceptual split for a future plan validator:
 
 - the model could not produce valid meaning;
 - a valid program hit a runtime failure;
 - a runtime value violated accepted meaning (`int x` and the user typed `2.5`).
 
-Do not lock a new taxonomy for this. Current host types (`InterpreterError`, `RuntimeError`, `ConfigError`, `UsageError`) are enough until a real plan validator exists.
+Do not lock that validator taxonomy yet.
+
+Current host types are: `UsageError`, `ConfigError`, `InterpreterError`, `ComposerError`, `RuntimeError`. See the crate `error` module. `RuntimeError` is host plumbing (OpenAI, I/O, JSON, shared source helpers). Composition, lock, repair, and build are `ComposerError`. The dreamed program (`dream_error`, lucid turn cap) is `InterpreterError`.
 
 `--strict` belongs to elaboration and validation, not to improvising at runtime.
 

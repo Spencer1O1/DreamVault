@@ -65,7 +65,7 @@ See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
 
 ## Phase 9 — Project Layer
 
-Done. Known builders: Dream owns manifests. `set_dependencies` takes `unit` plus names and optional features; Dream picks versions. Package name from entry stem on init only. Dream does not generate target-language wiring. `unsupported`: first writer owns manifest-shaped files.
+Done. Known builders: Dream owns manifests. `set_dependencies` takes `unit` plus names, optional version, and optional features. Package name from entry stem on init only. Dream does not generate target-language wiring. `unsupported`: first writer owns manifest-shaped files.
 
 ## Phase 10 — Target-Specific Locks
 
@@ -84,6 +84,18 @@ See [[Projects/Dream/Semantic Locking and Inspection|Semantic Locking and Inspec
 Source hash so unlocked units that have not changed are not sent to the Composer again.
 
 See [[Projects/Dream/Cache and Incremental Semantics|Cache and Incremental Semantics]].
+
+## Later — Composer Research
+
+Wanted. Tools so the composer can fetch package indexes and language docs. Dream owns the fetch. Not a version resolver. An omitted dependency version stays unconstrained.
+
+See [[Projects/Dream/Later Composer Tools|Later Composer Tools]].
+
+## Later — Targeted Edits
+
+Wanted. Patch or LSP-shaped tools so the composer can change part of a file. `write_output_file` stays whole-file replace until that work starts.
+
+See [[Projects/Dream/Later Composer Tools|Later Composer Tools]].
 
 ## Later — Formal Semantic Representation
 
