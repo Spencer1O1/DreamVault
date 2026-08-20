@@ -51,9 +51,7 @@ If the Composer can generate it, generation may succeed.
 
 `-t` is an open-ended compose hint. A **builder** is a toolchain Dream will actually exec (`cargo`, `go`, …), not a language vibe (`cpp`, `embedded`).
 
-**v0:** after the write loop settles, Dream asks once for a builder.
-
-**Next:** ask **before** any output writes. Known builders unlock Dream’s project layer (`add_dependency`, …). No pick, or `unsupported`, means Dream will not `--build`, `--run`, or repair. Composition may still succeed (generic unit-owned writes).
+Ask **before** any output writes. Known builders later unlock Dream’s project layer. No pick, or `unsupported`, means Dream will not `--build`, `--run`, or repair. Composition may still succeed (generic unit-owned writes).
 
 Do not infer the builder from the output tree. Do not take build or run argv from the model. Do not put `set_builder` in the write-loop catalog.
 
@@ -73,9 +71,7 @@ Core invariant:
 
 The Composer should not receive unrestricted shell or `-o` access.
 
-**v0:** writes through `write_output_file` into a staging directory; Dream replaces `-o`.
-
-**Next:** writes only unit-owned artifacts in place. Manifests go through target-aware project tools. Unknown files stay. `--fresh` is the wipe. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
+Writes only unit-owned artifacts in place. A write names the owning `.foo`. Manifests go through target-aware project tools (Phase 9). Unknown files stay. `--fresh` is the wipe. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
 
 The Composer does not get `stdout`, `stdin`, or data-file tools. Those belong to `dream now`.
 

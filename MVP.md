@@ -1,5 +1,5 @@
-**Status:** Implemented  
-**Purpose:** The v0 product contract that was built. An implementer of *current* crate behavior should follow this file plus [[Projects/Dream/Core Rules|Core Rules]]. The next contract is [[Projects/Dream/Artifact Ownership|Artifact Ownership]] (in-place reconcile, provenance, builder first, `--fresh`, target-specific locks).
+**Status:** Historical v0  
+**Purpose:** The first CLI that was built (replace `-o`, builder after writes). Do not treat this as the current compose contract. Current compose is [[Projects/Dream/Artifact Ownership|Artifact Ownership]] through Phase 8. Interpreter `dream now` in this file still matches the crate. Plus [[Projects/Dream/Core Rules|Core Rules]].
 
 The Rust crate lives in a **separate workspace**, not this notes vault.
 
@@ -76,7 +76,7 @@ Later, same family: `read_file`, `write_file`, `http_request`. Still executed by
 - path must stay under the output root
 - after the compose loop settles, Dream replaces `-o` with the staged tree
 
-**v0 asks `set_builder` after the write loop.** Next contract: declare the builder first. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
+**v0 asked `set_builder` after the write loop.** The crate now declares the builder first and writes in place. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
 
 The Composer does not get `stdout`, `stdin`, or data-file tools. It is writing a project, not running the program.
 

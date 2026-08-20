@@ -27,7 +27,7 @@ Source-oriented: the user locks the `.foo` file. Dream already knows the generat
 
 Do not invent target-independent locked meaning before Gimbal.
 
-`read_source_file` still returns the `.foo`. In compose mode, if Dream has a realization (locked, or settled / just composed this run), the result includes those artifact paths and contents. An unlocked unit that is not settled yet is composed first (nested job), then returned the same way. The interpreter (`dream now`) does not attach artifacts and does not recurse into compose.
+`read_source_file` still returns the `.foo`. In compose mode, if the store already has a realization, the result includes those artifact paths and contents. Reading never starts a compose job. The interpreter (`dream now`) does not attach artifacts.
 
 See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
 

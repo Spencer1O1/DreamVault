@@ -40,7 +40,7 @@ A programmer can look at the folder. The interpreter can too.
 
 `list_source_files` returns `.foo` paths under the project root. Paths only.
 
-`read_source_file` returns one semantic unit, sandboxed to the project, and records the dependency. Always the `.foo` text. In compose mode, an unlocked unsettled unit is composed first; a read that already has a realization includes those artifacts. `dream now` does not compose and does not attach artifacts. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
+`read_source_file` returns one semantic unit, sandboxed to the project, and records the dependency. Always the `.foo` text. It never starts a compose job. In compose mode, if the provenance store already has artifacts for that unit, the read attaches them. `dream now` returns `{ path, source }` only. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
 
 ### Interpreter runtime — `dream now` only
 
@@ -72,12 +72,11 @@ If a v0 program needs a data file or the network, `DreamError`. Do not invent `u
 ### Composer — default mode only
 
 ```text
-write_output_file(path, contents)
+write_output_file(unit, path, contents)
+remove_output_file(unit, path)
 ```
 
-**v0:** writes into the `-o` staging tree. After the compose loop settles, Dream replaces the output folder.
-
-**Next:** writes in place, only for the current unit’s artifacts. Project-owned paths use project tools. Unmanaged paths are rejected. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
+Writes in place. `unit` is the project-relative `.foo` that owns the path. Dream checks the claim. Project-owned paths use project tools (Phase 9). Unmanaged paths are rejected. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
 
 The Composer does not run the program. It does not get `stdout`, `stdin`, or data-file tools.
 

@@ -1,7 +1,7 @@
-**Status:** Next contract (after v0)  
+**Status:** Current compose contract through Phase 8. Phase 9 (project layer) and Phase 10 (locks) are still next.  
 **Purpose:** Pre-Gimbal target artifact ownership, in-place reconciliation, and locks. Implementers should follow this plus [[Projects/Dream/Core Rules|Core Rules]]. Do not invent a target-independent IR.
 
-v0 (`[[Projects/Dream/MVP|MVP]]`) still **replaces** `-o` and asks for the builder **after** writes. That is the implemented CLI. This note is what comes next.
+[[Projects/Dream/MVP|MVP]] is the historical v0 (replace `-o`, builder after writes). The crate no longer does that.
 
 ---
 
@@ -44,7 +44,7 @@ Every path under `-o` is one of:
 3. Unmanaged      — no Dream provenance; user-owned by default
 ```
 
-Toolchain outputs (`target/`, `node_modules/`, `Cargo.lock`, …) are build state, not semantic artifacts. Policy may vary by target. Do not treat them as Composer output.
+Toolchain outputs (`target/`, `Cargo.lock`, …) are build state, not semantic artifacts. Do not treat them as Composer output. With no provenance store, any file outside `.dream/` means `-o` is occupied (`--fresh` or an empty directory). Do not skip leftover toolchain dirs by guessing names.
 
 ```text
 owner = Unit(path)
@@ -93,7 +93,7 @@ A unit may also own generated resources (`assets/generated-background.svg`). Man
 
 `-t` stays an open-ended compose hint.
 
-**Declare the builder before any output writes.** v0 asked after the write loop; that is wrong for target-aware project tools.
+**Declare the builder before any output writes.** That turn is `set_builder` only — no `dream_error`, no write tools. v0 asked after the write loop; that is gone.
 
 ```text
 entry .foo
@@ -120,7 +120,7 @@ Known builders get structured project tools. Unknown / `unsupported` targets use
 
 The Composer does not get unrestricted write access to `-o`.
 
-While composing `server.foo` it may create, update, or delete only artifacts owned by `server.foo` (including newly registered paths for that unit).
+A write names the `.foo` unit it belongs to. It may create, update, or delete only artifacts owned by that unit (including newly registered paths for it).
 
 Reject:
 
@@ -130,7 +130,7 @@ Reject:
 
 The Composer must not silently steal ownership.
 
-It may propose new paths for the current unit. After that unit settles, Dream records the new set. Paths that were owned by this unit and are gone from the new set may be deleted.
+After the session settles, Dream records the new path set for each unit that wrote. Paths that were owned by that unit and are gone from the new set may be deleted.
 
 ---
 
@@ -161,7 +161,7 @@ declare builder
     ↓
 load existing target provenance
     ↓
-compose the entry (stack)
+one composition session (entry is the root)
     ↓
 reconcile project-owned state
     ↓
@@ -170,26 +170,32 @@ build if asked
 
 Normal `dream` must **not** `rm -rf` `-o`.
 
-### Compose stack
+### Composition session
 
-Dream starts a compose job for the entry `.foo`. That job is the **current unit**. Every `write_output_file` belongs to it. The model does not name the owner.
+`dream <entry.foo>` starts **one** conversation. The entry is the discovery root, not the owner of every write. `.foo` remains the semantic, lock, and provenance unit. It is not the LLM invocation unit.
 
-`read_source_file` during compose:
+`read_source_file` never starts a compose job. It returns the foocode immediately, plus that unit’s artifacts if the provenance store already has them (last accepted realization, locked or not). `dream now` returns `{ path, source }` only.
 
-| That unit | What Dream does |
-|---|---|
-| Locked for this target | No nested job. Return foocode + frozen artifacts. |
-| Already settled this run | No nested job. Return foocode + this run’s artifacts. |
-| Unlocked and not settled | **Recurse:** finish composing that unit first, then return foocode + its new artifacts. |
-| Cycle in the stack | `DreamError` (same as today’s source cycle). |
-
-A `.foo` never reached from the entry is not composed. Its artifacts stay.
+A `.foo` never read from the entry is not composed. Its artifacts stay.
 
 Skipping unchanged hashes is later.
 
+### Writes name the unit
+
+`write_output_file` / `remove_output_file` take `unit` (project-relative `.foo`). Dream checks the claim:
+
+- the unit exists in the project;
+- the unit is the entry or was read this run;
+- the unit is not locked;
+- the path is not stolen, project-owned, or unmanaged (unless `--fresh`).
+
+Ownership is never inferred from the last read or from the entry.
+
+When the session settles, Dream reconciles each unit that wrote this run.
+
 ### No provenance
 
-Missing or empty `-o`: first writes register under the current unit.
+Missing or empty `-o`: first writes register under the claimed unit.
 
 `-o` has files and Dream has no provenance store: **error**. Pass `--fresh` or use an empty directory. Do not silently claim the tree.
 
@@ -199,7 +205,7 @@ The store is for one target. If it says `rust` and the user passes `-t go`: **er
 
 ### Where the store lives
 
-A Dream-owned file in `-o` (not in the `.foo` tree). Exact format is not precious. The Composer cannot write it.
+A Dream-owned file in `-o` (not in the `.foo` tree): `.dream/provenance.json`. The Composer cannot write `.dream/`.
 
 ---
 
@@ -211,7 +217,7 @@ dream app.foo -t rust -o ./out --fresh
 
 Reset this target realization and compose again. Ignore current provenance and target-specific locks.
 
-Drop provenance, locks, and **Dream-owned** paths (unit + project). Leave unmanaged files (`README.md`, `logo.png`, …). The user can `rm -rf` `-o` if they want an empty folder.
+Drop provenance, locks, and **Dream-owned** paths (unit + project), then delete `.dream/`. Leave unmanaged files (`README.md`, `logo.png`, …). Leftover toolchain dirs (`target/`, …) are not in the map, so they survive and make the dest occupied on the next no-store open — pass `--fresh` again or empty the folder. The user can `rm -rf` `-o` if they want an empty folder.
 
 Not `--clean`. “Clean” already means “delete build artifacts” in too many toolchains.
 
@@ -241,7 +247,7 @@ A lock means: do not run the Composer on that unit. Writes to its artifacts are 
 
 Dependents still request the `.foo`. If they only get foocode, they will invent an API that does not match the frozen realization. If they only get `.rs`, they lose the unit.
 
-**Compose mode:** if Dream already has a realization for this target (locked, or settled this run, or just finished a nested compose), the read returns both — same graph edge:
+**Compose mode:** if the provenance store already has a realization for this target, the read returns both — same graph edge:
 
 ```text
 path:    users/active.foo
@@ -254,7 +260,7 @@ artifacts:
 
 The model may read those artifacts. It may not write locked ones. No extra tool.
 
-**`dream now`:** locks are `-t`-specific. The interpreter has no artifact set. It gets `{ path, source }` only. No compose recurse.
+**`dream now`:** locks are `-t`-specific. The interpreter has no artifact set. It gets `{ path, source }` only. No compose.
 
 After Gimbal, a lock should freeze formal meaning; provenance still tracks the translated files.
 
@@ -280,7 +286,7 @@ On first init of a known builder, Dream sets the package name from the **entry f
 
 ### How files find each other in the target
 
-Dream does not generate language-specific wiring (`mod`, `import`, `package`, crate roots, …). That is ordinary target source. The unit that owns the program entry (usually the Dream entry’s artifacts) writes whatever the target needs to see the other units’ files. The composer already has those paths from the compose stack.
+Dream does not generate language-specific wiring (`mod`, `import`, `package`, crate roots, …). That is ordinary target source. The unit that owns the program entry (usually the Dream entry’s artifacts) writes whatever the target needs to see the other units’ files. Those paths come from reads and writes in the same session.
 
 ### Unknown / `unsupported` targets
 
@@ -290,7 +296,7 @@ No project layer and no `set_dependencies`. All Composer writes are unit-owned. 
 
 ## Repair
 
-Build runs **after** the compose stack is empty. Repair is not a job on that stack and does not pick a unit by guessing from rustc paths.
+Build runs **after** the composition session settles. Repair does not pick a unit by guessing from rustc paths. The owner of an existing path is the map, not the model.
 
 It is a new session with the toolchain diagnostics. Same builder. Writes stay in `-o`.
 

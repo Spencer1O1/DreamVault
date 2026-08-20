@@ -28,7 +28,7 @@
                                       Builder / Runner
 ```
 
-**v0 (implemented)** still stages and **replaces** `-o`, and asks for the builder after writes. The diagram is the next architecture. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
+Builder first and in-place reconcile are implemented. Locks and the project layer are next. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
 
 A later formal semantic core is not part of it. See [[Projects/Dream/Later Formal Semantic Core|Later Formal Semantic Core]]. A later deterministic `now` runtime is also not part of it. See [[Projects/Dream/Later Interpreter Runtime|Later Interpreter Runtime]].
 
@@ -63,7 +63,7 @@ read_source_file(path)
 
 `list_source_files` returns project-relative `.foo` paths only. No contents.
 
-`read_source_file` returns one unit if it is inside the project. Compose mode: unlocked unsettled units are composed first (stack); then the read includes the realization. Locked or already-settled reads include artifacts without a nested job. The interpreter does not compose and does not attach artifacts.
+`read_source_file` returns one unit if it is inside the project. Compose mode: foocode plus that unit’s stored artifacts if any exist. Reading never starts a compose job. The interpreter does not compose and does not attach artifacts.
 
 The model does not get arbitrary filesystem access.
 
@@ -148,9 +148,7 @@ Target Python may use:
 FastAPI
 ```
 
-v0 writes a complete tree through `write_output_file` into a staging directory, then replaces `-o`.
-
-Next: write in place, only artifacts owned by the current unit, after the builder is declared. Project-owned files go through Dream’s target layer. It does not get interpreter runtime tools. See [[Projects/Dream/Targets and Composition|Targets and Composition]].
+Writes in place after the builder is declared. A write names the owning `.foo`. Project-owned files go through Dream’s target layer (Phase 9). The Composer does not get interpreter runtime tools. See [[Projects/Dream/Targets and Composition|Targets and Composition]].
 
 ## The Builder
 

@@ -1,6 +1,6 @@
 **Status:** Preliminary specification  
 **Name:** Dream  
-**Current stage:** v0 is implemented ([[Projects/Dream/MVP|MVP]]). Next contract: [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
+**Current stage:** Compose is [[Projects/Dream/Artifact Ownership|Artifact Ownership]] through Phase 8 (in-place, one session, writes name the unit). `dream now` still matches [[Projects/Dream/MVP|MVP]]. Next: Phase 9 project layer, then Phase 10 locks.
 
 Dream is a programming language for executable pseudocode.
 
@@ -77,6 +77,6 @@ execute the Dream program immediately using an LLM as the interpreter.
                                       --build / --run
 ```
 
-v0 still replaces `-o` and asks for the builder last. The diagram is the next architecture.
+The diagram is the current architecture. v0 used to replace `-o` and ask for the builder last.
 
 Gimbal is not part of the current design. A later formal semantic core is discussed separately in [[Projects/Dream/Later Formal Semantic Core|Later Formal Semantic Core]].

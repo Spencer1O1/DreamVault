@@ -1,7 +1,7 @@
 **Status:** Phase list only. Do not track checkboxes here.  
-**Purpose:** v0 is implemented. Next work is pre-Gimbal artifact ownership, not a formal semantic core.
+**Purpose:** Phases 1–8 are implemented. Next is the project layer (Phase 9), then target-specific locks (Phase 10). Not a formal semantic core.
 
-The crate is a **separate workspace**, not this notes vault. Implemented contract: [[Projects/Dream/MVP|MVP]]. Next contract: [[Projects/Dream/Artifact Ownership|Artifact Ownership]]. Progress is `docs/plan.md` in the crate.
+The crate is a **separate workspace**, not this notes vault. `dream now`: [[Projects/Dream/MVP|MVP]]. Compose: [[Projects/Dream/Artifact Ownership|Artifact Ownership]] through Phase 8. Progress is `docs/plan.md` in the crate.
 
 ---
 
@@ -45,17 +45,19 @@ Do not add a `semantics/` / Gimbal layer until that work is actually started.
 
 ## MVP Phases 1–6 — Done
 
-Interpreter, multi-file, compose (replace `-o`), known builders (asked **after** writes), build/run, bounded repair. Progress: crate `docs/plan.md`.
+Interpreter, multi-file, compose (replace `-o`), known builders (asked **before** writes), build/run, bounded repair. Progress: crate `docs/plan.md`.
 
 ## Phase 7 — Builder First
 
-Ask `set_builder` once **before** output writes. `-t` stays an open-ended hint. `unsupported` / no pick → compose only.
+Done. Ask `set_builder` once **before** output writes. That turn is `set_builder` only. `-t` stays an open-ended hint. `unsupported` / no pick → compose only.
 
 See [[Projects/Dream/Targets and Composition|Targets and Composition]].
 
 ## Phase 8 — Provenance and In-Place Reconcile
 
-Stop treating `-o` as disposable. Compose stack from the entry: writes belong to the current unit; `read_source_file` of an unlocked unsettled unit recurses. Persist unit → artifact paths in `-o`. Enforce ownership on write/delete. Unknown files stay. No store + files, or `-t` mismatch → error. `--fresh` drops Dream-owned paths only and ignores locks.
+Done. Progress: crate `docs/plan.md`.
+
+Stop treating `-o` as disposable. One composition session from the entry. `read_source_file` never composes; it returns foocode plus stored artifacts if any. Writes name the owning `.foo`. Persist unit → artifact paths in `-o`. Enforce ownership on write/delete. Unknown files stay. No store + files, or `-t` mismatch → error. `--fresh` drops Dream-owned paths only and ignores locks.
 
 No one-`.foo`-to-one-file rule. No lock CLI yet. No project tools yet. No IR.
 

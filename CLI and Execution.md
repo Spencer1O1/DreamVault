@@ -47,9 +47,9 @@ Running:
 dream server.foo -t rust -o ./out
 ```
 
-**v0 (implemented):** write a complete tree through `write_output_file`, then replace `./out`.
+Declare the builder first (`set_builder` only on that turn), then reconcile into the existing `./out` project. One composition session from the entry. Writes name the owning `.foo`. Unmanaged files stay. There is no `redream` command. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
 
-**Next:** declare the builder first, then reconcile into the existing `./out` project. Unlocked units may be recomposed. Locked units and unmanaged files stay. There is no `redream` command. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
+Historical v0 replaced the whole folder after staging.
 
 It does not build unless `--build` or `--run` is passed.
 
@@ -191,9 +191,7 @@ out/
 
 The project should resemble ordinary hand-maintainable source code.
 
-**v0:** `-o` **replaces the whole folder**. Dream stages the new tree, then swaps it in, so a failed compose does not half-wipe the destination.
-
-**Next:** `-o` is an existing project. Normal `dream` reconciles in place (compose stack from the entry). Unknown files are user-owned. Files in `-o` but no provenance → error. `-t` disagrees with the store → error unless `--fresh`.
+`-o` is an existing project. Normal `dream` reconciles in place (one composition session from the entry). Unknown files are user-owned. Files in `-o` but no provenance → error. `-t` disagrees with the store → error unless `--fresh`. Historical v0 replaced the whole folder.
 
 ## Generated Projects Are First-Class
 
@@ -257,13 +255,11 @@ run
 
 ## `--fresh`
 
-Not in v0. Next contract:
-
 ```bash
 dream app.foo -t rust -o ./out --fresh
 ```
 
-Reset Dream’s realization: drop provenance, locks, and Dream-owned paths; leave unmanaged files; compose again. Ignores target-specific locks. Not `--clean` (that means “delete build artifacts” in too many toolchains).
+Reset Dream’s realization: drop provenance, locks, and Dream-owned paths; delete `.dream/`; leave unmanaged files; compose again. Ignores target-specific locks. Not `--clean` (that means “delete build artifacts” in too many toolchains).
 
 ## Locks
 
