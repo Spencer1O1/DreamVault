@@ -167,7 +167,7 @@ Examples:
 ```text
 cargo → cargo build / cargo run
 go → go build / go run .
-python → no compile step; python {entry-stem}.py
+python → no compile step; python {entry-stem}.py (exec: python, then python3, then py)
 C → later catalog row (no clang run)
 ```
 

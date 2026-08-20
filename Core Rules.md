@@ -31,6 +31,8 @@ Declare the toolchain before output writes. Do not infer it from the tree.
 
 The model asks through tools. Dream performs the effect. Chat text is not program output.
 
+Tool descriptions describe the tool. Parameter descriptions describe the parameters. Do not explain a parameter in the tool description.
+
 Source tools, interpreter runtime tools, and composer output tools are separate families. Do not mix them.
 
 ## Strictness Rule

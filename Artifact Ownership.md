@@ -44,7 +44,7 @@ Every path under `-o` is one of:
 3. Unmanaged      — no Dream provenance; user-owned by default
 ```
 
-Each catalog toolchain lists its **project files**: the manifest Dream writes, plus lockfiles and build dirs the toolchain creates (`Cargo.lock`, `target/`, `go.sum`, …). Those are project-owned for wipe. They are not Composer artifacts and not in the provenance map. Do not guess names at scan time — the catalog is the list. With no provenance store, any file outside `.dream/` means `-o` is occupied (`--fresh` or an empty directory).
+Each catalog toolchain lists its **project files**: the manifest Dream writes, plus lockfiles, build dirs, and toolchain binaries (`Cargo.lock`, `target/`, `go.sum`, the Go `{stem}` / `{stem}.exe` from `go build`, …). Those are project-owned for wipe. They are not Composer artifacts and not in the provenance map. Do not guess names at scan time — the catalog is the list. With no provenance store, any file outside `.dream/` means `-o` is occupied (`--fresh` or an empty directory).
 
 ```text
 owner = Unit(path)
@@ -95,7 +95,7 @@ A unit may also own generated resources (`assets/generated-background.svg`). Man
 
 **Declare the toolchain before any output writes.** That turn is `set_toolchain` only — no `dream_error`, no write tools. v0 asked after the write loop; that is gone.
 
-The `set_toolchain` result is how Dream execs that catalog row. `run.argv` is the start command. `build.argv` is present only when there is a compile step (python omits it). If Dream owns the dest entry path (python: `{entry-stem}.py`), the result includes `entry`. Cargo/Go have no `entry` — their toolchains find the program. `unsupported` returns only the name.
+The `set_toolchain` result is how Dream execs that catalog row. `run.argv` is the start command. `build.argv` is present only when there is a compile step (python omits it). `project` is every dest path that row owns (manifest, lockfiles, build dirs). If Dream owns the dest entry path (python: `{entry-stem}.py`), the result includes `entry`. Cargo/Go have no `entry` — their toolchains find the program. `unsupported` returns only the name.
 
 ```text
 entry .foo
@@ -191,7 +191,7 @@ Skipping unchanged hashes is later.
 - the unit is not locked;
 - the path is not stolen, project-owned, or unmanaged (unless `--fresh`).
 
-Ownership is never inferred from the last read or from the entry.
+Ownership is never inferred from the last read or from the entry. The write-loop preamble states that project-owned paths from the toolchain must not be modified. Write and remove tool text does not repeat that.
 
 When the session settles, Dream reconciles each unit that wrote this run.
 
@@ -292,7 +292,7 @@ Repair rejects `set_dependencies`.
 
 On first init of a known toolchain, Dream sets the package name from the **entry file stem** (`multifile.foo` → `multifile`). Not a tool. Later reconciles do not overwrite an existing name (a user rename stays).
 
-Python `--run` is `python {stem}.py` in `-o` (`my.foo` → `my.py`). Same stem. Dream does not rename a composed file. If that script is missing, run fails.
+Python `--run` is `python {stem}.py` in `-o` (`my.foo` → `my.py`). Same stem. Dream does not rename a composed file. If that script is missing, run fails. Exec tries `python`, then `python3`, then `py`. The `set_toolchain` reply still says `python`.
 
 ### How files find each other in the target
 

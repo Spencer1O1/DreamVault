@@ -53,11 +53,11 @@ If the Composer can generate it, generation may succeed.
 
 Ask **before** any output writes. Known toolchains later unlock Dream’s project layer. No pick, or `unsupported`, means Dream will not `--build`, `--run`, or repair. Composition may still succeed (generic unit-owned writes).
 
-Do not infer the toolchain from the output tree. Do not take build or run argv from the model. Do not put `set_toolchain` in the write-loop catalog. The `set_toolchain` result tells the model how Dream execs that row: `run.argv`, optional `build.argv`, and `entry` when Dream owns the dest path.
+Do not infer the toolchain from the output tree. Do not take build or run argv from the model. Do not put `set_toolchain` in the write-loop catalog. The `set_toolchain` result tells the model how Dream execs that row: `run.argv`, optional `build.argv`, `project` for every dest path that row owns, and `entry` when Dream owns the dest path.
 
 This list does not constrain `-t`. Vague targets (Arduino, COBOL, …) stay `unsupported` until that catalog row exists.
 
-If a known toolchain is declared but that program is not installed, Dream returns an error with a short install hint. It does not install it. `unsupported` means Dream has no catalog row; a missing `cargo` means the user does not have it.
+If a known toolchain is declared but that program is not installed, Dream returns an error with a short install hint. It does not install it. `unsupported` means Dream has no catalog row; a missing `cargo` means the user does not have it. Python’s official names are `python`, `python3`, and `py` — not a user alias table.
 
 Each catalog row lists the dest paths that toolchain owns: the manifest Dream writes, plus lockfiles and build dirs it creates. `--fresh` drops that whole list. Dream does not infer `Cargo.lock` / `target/` from path shape.
 

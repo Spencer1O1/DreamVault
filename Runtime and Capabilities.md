@@ -7,6 +7,8 @@
 
 The model asks. Dream performs.
 
+Tool descriptions describe the tool. Parameter descriptions describe the parameters. Do not explain a parameter in the tool description.
+
 ```text
 LLM pretends to execute
 ```
@@ -77,7 +79,7 @@ remove_output_file(unit, path)
 set_dependencies(unit, dependencies)
 ```
 
-Writes in place. `unit` is the project-relative `.foo` that owns the path. Dream checks the claim. `set_dependencies` is for known toolchains only; Dream owns the manifest. Unmanaged paths are rejected. `write_output_file` is a whole-file replace. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
+Writes in place. `unit` is the project-relative `.foo` that owns the path. Dream checks the claim. `set_dependencies` is for known toolchains only; Dream owns the manifest. Project-owned paths from the toolchain must not be modified; writes and removes of those paths are rejected. Unmanaged paths are rejected. `write_output_file` is a whole-file replace. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
 
 Later, same composer side: research tools (indexes, docs) and targeted / LSP edits. Not built. Not interpreter runtime. See [[Projects/Dream/Later Composer Tools|Later Composer Tools]].
 

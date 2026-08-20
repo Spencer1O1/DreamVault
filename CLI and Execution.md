@@ -249,7 +249,7 @@ build
 run
 ```
 
-`--run` implies build. The argv is the catalog row (`cargo run`, `go run .`, `python {entry-stem}.py`). Not from the model. The python script is the entry file stem (`my.foo` → `my.py` in `-o`). Dream does not rename files.
+`--run` implies build. The argv is the catalog row (`cargo run`, `go run .`, `python {entry-stem}.py`). Not from the model. The python script is the entry file stem (`my.foo` → `my.py` in `-o`). Dream does not rename files. At exec, the python row tries `python`, then `python3`, then `py`. First on `PATH` wins. None of them → install hint.
 
 `--lucid` does not use `--run`. Interpretation is already execution.
 
