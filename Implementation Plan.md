@@ -1,7 +1,7 @@
-**Status:** Preliminary staged plan  
+**Status:** Phase list only. Do not track checkboxes here.  
 **Purpose:** Reach a working Dream language without building later semantic machinery too early.
 
-The crate is a **separate workspace**, not this notes vault. The v0 contract is [[Projects/Dream/MVP|MVP]].
+The crate is a **separate workspace**, not this notes vault. The v0 contract is [[Projects/Dream/MVP|MVP]]. Progress is `docs/plan.md` in the crate.
 
 ---
 
