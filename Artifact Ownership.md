@@ -1,4 +1,4 @@
-**Status:** Current compose contract through Phase 8. Phase 9 (project layer) and Phase 10 (locks) are still next.  
+**Status:** Current compose contract through Phase 9. Phase 10 (locks) is still next.  
 **Purpose:** Pre-Gimbal target artifact ownership, in-place reconciliation, and locks. Implementers should follow this plus [[Projects/Dream/Core Rules|Core Rules]]. Do not invent a target-independent IR.
 
 [[Projects/Dream/MVP|MVP]] is the historical v0 (replace `-o`, builder after writes). The crate no longer does that.
@@ -272,13 +272,15 @@ Project-owned files (`Cargo.toml`, `go.mod`, `pyproject.toml`) are **not** freef
 
 ### `set_dependencies`
 
-One tool, for the **current unit** only. The list **replaces** that unit’s claim set when the job settles.
+One tool. It takes `unit` (project-relative `.foo`) plus that unit’s full dependency list. Dream checks the same ownership as a write: the unit exists and is the entry or was read this run. The list **replaces** that unit’s dependencies when the session settles. Units that do not call it keep their previous list.
 
-Each claim is a **package name** plus optional **features**. Dream (or `cargo add` / equivalent) chooses the version. The model does not pass semver.
+Each entry is a **package name** plus optional **features**. Dream chooses the version. The model does not pass semver.
 
-Project deps are the union of claims. Dream retracts a dep only if Dream installed it from a claim and no unit still claims it. User-added deps with no claim stay.
+Project deps are the union of every unit’s list. Dream retracts a dep only if Dream installed it and no unit still lists it. User-added deps with no unit listing stay.
 
 No `list_*` / `add_*` / `remove_*` dep tools. Do not call them imports. The composer does not read `Cargo.toml`.
+
+Repair rejects `set_dependencies`.
 
 ### Package name
 

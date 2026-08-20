@@ -74,9 +74,10 @@ If a v0 program needs a data file or the network, `DreamError`. Do not invent `u
 ```text
 write_output_file(unit, path, contents)
 remove_output_file(unit, path)
+set_dependencies(unit, dependencies)
 ```
 
-Writes in place. `unit` is the project-relative `.foo` that owns the path. Dream checks the claim. Project-owned paths use project tools (Phase 9). Unmanaged paths are rejected. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
+Writes in place. `unit` is the project-relative `.foo` that owns the path. Dream checks the claim. `set_dependencies` is for known builders only; Dream owns the manifest. Unmanaged paths are rejected. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
 
 The Composer does not run the program. It does not get `stdout`, `stdin`, or data-file tools.
 

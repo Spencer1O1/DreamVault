@@ -1,7 +1,7 @@
 **Status:** Phase list only. Do not track checkboxes here.  
-**Purpose:** Phases 1–8 are implemented. Next is the project layer (Phase 9), then target-specific locks (Phase 10). Not a formal semantic core.
+**Purpose:** Phases 1–9 are implemented. Next is target-specific locks (Phase 10). Not a formal semantic core.
 
-The crate is a **separate workspace**, not this notes vault. `dream now`: [[Projects/Dream/MVP|MVP]]. Compose: [[Projects/Dream/Artifact Ownership|Artifact Ownership]] through Phase 8. Progress is `docs/plan.md` in the crate.
+The crate is a **separate workspace**, not this notes vault. `dream now`: [[Projects/Dream/MVP|MVP]]. Compose: [[Projects/Dream/Artifact Ownership|Artifact Ownership]] through Phase 9. Progress is `docs/plan.md` in the crate.
 
 ---
 
@@ -65,7 +65,7 @@ See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
 
 ## Phase 9 — Project Layer
 
-Known builders: Dream owns manifests. `set_dependencies` is names plus optional features; Dream picks versions. Package name from entry stem on init only. Dream does not generate target-language wiring. `unsupported`: first writer owns manifest-shaped files.
+Done. Known builders: Dream owns manifests. `set_dependencies` takes `unit` plus names and optional features; Dream picks versions. Package name from entry stem on init only. Dream does not generate target-language wiring. `unsupported`: first writer owns manifest-shaped files.
 
 ## Phase 10 — Target-Specific Locks
 
