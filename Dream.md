@@ -1,10 +1,10 @@
 **Status:** Preliminary specification  
 **Name:** Dream  
-**Current stage:** Foundational design; implementation has not started
+**Current stage:** v0 product contract is in [[Projects/Dream/MVP|MVP]]
 
 Dream is a programming language for executable pseudocode.
 
-A Dream program is written in `.foo` files using clear, informal programming notation rather than a rigid grammar.
+A Dream program is written in `.foo` files using clear, informal programming notation rather than a rigid grammar. That source is **foocode**.
 
 Dream uses an LLM to determine what each source unit means, then either composes that program into a conventional software project in a requested target language, or executes it immediately.
 
@@ -24,6 +24,7 @@ The most important structural rule is:
 
 ## Project Documents
 
+- [[Projects/Dream/MVP|MVP]]
 - [[Projects/Dream/Vision and Principles|Vision and Principles]]
 - [[Projects/Dream/Semantic Units|Semantic Units]]
 - [[Projects/Dream/Language and Source|Language and Source]]
@@ -45,7 +46,7 @@ The most important structural rule is:
 dream program.foo
 ```
 
-compose that Dream program into a conventional software project in a requested target language, build it when possible, and optionally run it;
+compose that Dream program into a conventional software project in a requested target language (build and run only if asked);
 
 or:
 
@@ -62,19 +63,18 @@ execute the Dream program immediately using an LLM as the interpreter.
                             │
                             ▼
                      Source Resolver
-                       project root
-                       path sandbox
+                  list_source_files
+                  read_source_file
                             │
               ┌─────────────┴─────────────┐
-              │                           │
               ▼                           ▼
            `now`                      default
         Interpreter                   Composer
-              │     read_source_file      │
-              └──────────►────────────────┘
-                            │
-                     Program Output
-                     or Target Project
+         stdout/stdin            write_output_file
+              │                           │
+              ▼                           ▼
+       Program Output                replace -o
+                                      --build / --run
 ```
 
 Gimbal is not part of the current design. A later formal semantic core is discussed separately in [[Projects/Dream/Later Formal Semantic Core|Later Formal Semantic Core]].

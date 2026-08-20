@@ -89,6 +89,12 @@ Core invariant:
 
 The Composer should not receive unrestricted shell access.
 
+It writes only through `write_output_file`, into a staging directory for `-o`. After the compose loop settles, Dream replaces the output folder.
+
+The Composer does not get `stdout`, `stdin`, or data-file tools. Those belong to `dream now`.
+
+Default compose does not build. See `--build` and `--run` in [[Projects/Dream/CLI and Execution|CLI and Execution]].
+
 ## Build Repair
 
 Future composition may use bounded repair.
@@ -127,6 +133,7 @@ A later architecture may introduce a formal semantic representation before targe
 
 ## Related
 
+- [[Projects/Dream/MVP|MVP]]
 - [[Projects/Dream/CLI and Execution|CLI and Execution]]
 - [[Projects/Dream/Architecture|Architecture]]
 - [[Projects/Dream/Core Rules|Core Rules]]

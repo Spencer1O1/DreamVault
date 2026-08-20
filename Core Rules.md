@@ -27,9 +27,13 @@
 
 > **Dream owns capabilities. The model owns interpretation.**
 
+The model asks through tools. Dream performs the effect. Chat text is not program output.
+
+Source tools, interpreter runtime tools, and composer output tools are separate families. Do not mix them.
+
 ## Strictness Rule
 
-> **Normal Dream resolves reasonable ambiguity. Strict Dream exposes important ambiguity.**
+> **`--strict` is a stricter prompt. It is not a parser.**
 
 ## Artifact Rule
 

@@ -10,37 +10,22 @@
                               │
                               ▼
                        Source Resolver
-                         project root
-                         path sandbox
-                              │
-                              ▼
-                         Entrypoint
+                    list_source_files
+                    read_source_file
                               │
                 ┌─────────────┴─────────────┐
-                │                           │
                 ▼                           ▼
              `now`                      default
           Interpreter                   Composer
+           stdout/stdin            write_output_file
                 │                           │
-                │     read_source_file      │
-                └──────────►────────────────┘
-                              │
-                recorded .foo dependency set
-                              │
-                ┌─────────────┴─────────────┐
                 ▼                           ▼
-         Program Output                Target Project
+         Program Output              replace -o
+                                            │
+                                      --build / --run
                                             │
                                             ▼
-                                         Builder
-                                            │
-                                            ▼
-                                      Built Artifact
-                                            │
-                                         --run
-                                            │
-                                            ▼
-                                          Runner
+                                      Builder / Runner
 ```
 
 This is the current architecture. A later formal semantic core is not part of it. See [[Projects/Dream/Later Formal Semantic Core|Later Formal Semantic Core]].
@@ -55,6 +40,7 @@ Responsibilities:
 - locate the entrypoint;
 - normalize paths;
 - enforce project boundaries;
+- list project `.foo` paths through `list_source_files`;
 - serve `.foo` source through `read_source_file`;
 - reject paths outside the project;
 - detect missing files and cycles during requests;
@@ -64,21 +50,24 @@ The Source Resolver does not determine program meaning.
 
 It does not parse an import syntax.
 
-## Source Access Tool
+## Source Access Tools
 
-The semantic system receives other units through a constrained tool:
+Both modes may use:
 
 ```text
+list_source_files
 read_source_file(path)
 ```
 
-Dream validates the path and returns only allowed project source.
+`list_source_files` returns project-relative `.foo` paths only. No contents.
+
+`read_source_file` returns one unit if it is inside the project.
 
 The model does not get arbitrary filesystem access.
 
-Which files are needed is part of meaning. The model decides. Dream records the result.
+Which files are needed is part of meaning. The model may list the project, then read what it needs. Dream records each successful `read_source_file` as a dependency.
 
-See [[Projects/Dream/Projects and Imports|Projects and Imports]].
+See [[Projects/Dream/Projects and Imports|Projects and Imports]] and [[Projects/Dream/MVP|MVP]].
 
 ## Request Loop, Not a Prelude
 
@@ -161,9 +150,11 @@ FastAPI
 
 The Composer creates a complete target-native project.
 
+It writes only through `write_output_file`, into a staging directory for `-o`. It does not get interpreter runtime tools. See [[Projects/Dream/Targets and Composition|Targets and Composition]].
+
 ## The Builder
 
-The **Builder** operates after composition.
+The **Builder** operates after composition, and only when `--build` or `--run` is passed.
 
 Responsibilities:
 
@@ -223,6 +214,7 @@ DreamError: target project failed to build.
 
 ## Related
 
+- [[Projects/Dream/MVP|MVP]]
 - [[Projects/Dream/Projects and Imports|Projects and Imports]]
 - [[Projects/Dream/CLI and Execution|CLI and Execution]]
 - [[Projects/Dream/Targets and Composition|Targets and Composition]]

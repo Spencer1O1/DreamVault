@@ -21,9 +21,11 @@ dream --strict app.foo -t rust
 dream now --strict app.foo
 ```
 
-Strict mode changes semantic inference.
+`--strict` is a stricter prompt.
 
-It does not introduce a separate source grammar.
+It does not introduce a parser, linter, or separate source grammar.
+
+The prompt says: do not guess important ambiguity; return a `DreamError` instead.
 
 ## Default Ambiguity Handling
 
@@ -92,6 +94,7 @@ A normal-mode semantic result should not be silently reused as a strict-mode res
 
 ## Related
 
+- [[Projects/Dream/MVP|MVP]]
 - [[Projects/Dream/CLI and Execution|CLI and Execution]]
 - [[Projects/Dream/Cache and Incremental Semantics|Cache and Incremental Semantics]]
 - [[Projects/Dream/Core Rules|Core Rules]]

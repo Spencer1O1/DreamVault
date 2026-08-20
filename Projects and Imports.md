@@ -53,15 +53,18 @@ Those are all just meaning.
 
 The interpreter decides that another semantic unit is needed and asks Dream for it.
 
-## Source Access Tool
+It may first look at the project the way a programmer looks at the folder.
 
-The semantic system receives other units through a constrained tool:
+## Source Access Tools
 
 ```text
+list_source_files
 read_source_file(path)
 ```
 
-Dream:
+`list_source_files` returns every project-relative `.foo` path. No contents. The model should list instead of inventing filenames.
+
+`read_source_file`:
 
 - resolves the path against the project root;
 - rejects anything outside the project;
@@ -150,6 +153,7 @@ A manifest is not required for the earliest prototype.
 
 ## Related
 
+- [[Projects/Dream/MVP|MVP]]
 - [[Projects/Dream/Semantic Units|Semantic Units]]
 - [[Projects/Dream/Architecture|Architecture]]
 - [[Projects/Dream/Language and Source|Language and Source]]

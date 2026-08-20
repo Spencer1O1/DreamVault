@@ -33,7 +33,9 @@ and:
 dream now [OPTIONS] <FILE>
 ```
 
-Default mode creates a target project.
+Default mode **composes** a target project and stops.
+
+It does not build or run unless asked.
 
 `now` directly interprets the Dream program.
 
@@ -48,11 +50,11 @@ dream server.foo -t rust -o ./out
 means:
 
 1. start from the entry `.foo` file;
-2. determine meaning, requesting other `.foo` units as needed;
-3. compose a complete Rust project;
-5. write it to `./out`;
-6. build it when appropriate;
-7. optionally run it.
+2. determine meaning, listing and reading other `.foo` units as needed;
+3. write a complete target project through `write_output_file`;
+4. replace `./out` with the staged tree.
+
+It does not build. Add `--build` or `--run` for that.
 
 The generated project is a first-class artifact.
 
@@ -67,8 +69,10 @@ dream now main.foo
 means:
 
 1. start from the entry `.foo` file;
-2. execute it with the LLM interpreter, requesting other `.foo` units as needed;
-3. return observable program output.
+2. execute it with the LLM interpreter, listing and reading other `.foo` units as needed;
+3. print whatever the model sends through `stdout`.
+
+The model's chat text is discarded.
 
 No target language is involved.
 
@@ -184,6 +188,10 @@ out/
 
 The project should resemble ordinary hand-maintainable source code.
 
+`-o` **replaces the whole folder**.
+
+Dream stages the new tree, then swaps it in, so a failed compose does not half-wipe the destination.
+
 ## Generated Projects Are First-Class
 
 Dream should never treat generated projects as opaque temporary files.
@@ -202,9 +210,25 @@ and take over maintenance manually.
 
 Dream can therefore bootstrap conventional software.
 
-## `--run`
+## `--build`
 
-Example:
+```bash
+dream server.foo -t rust -o ./out --build
+```
+
+Pipeline:
+
+```text
+compose
+↓
+replace -o
+↓
+build
+```
+
+Default `dream` does not build.
+
+## `--run`
 
 ```bash
 dream server.foo -t rust -o ./out --run
@@ -213,41 +237,18 @@ dream server.foo -t rust -o ./out --run
 Pipeline:
 
 ```text
-resolve
-↓
 compose
+↓
+replace -o
 ↓
 build
 ↓
 run
 ```
 
-For interpreted Dream:
+`--run` implies build.
 
-```bash
-dream now server.foo
-```
-
-does not use `--run`; interpretation is already execution.
-
-## `--no-build`
-
-Future option:
-
-```bash
-dream app.foo -t rust -o ./out --no-build
-```
-
-Meaning:
-
-> Compose the target project and stop.
-
-Useful when:
-
-- inspecting generated code;
-- using unsupported toolchains;
-- building manually;
-- debugging composition.
+`dream now` does not use `--run`. Interpretation is already execution.
 
 ## `--release`
 
@@ -282,6 +283,7 @@ Do not prematurely build a generalized provider abstraction.
 
 ## Related
 
+- [[Projects/Dream/MVP|MVP]]
 - [[Projects/Dream/Architecture|Architecture]]
 - [[Projects/Dream/Targets and Composition|Targets and Composition]]
 - [[Projects/Dream/Semantics and Strictness|Semantics and Strictness]]

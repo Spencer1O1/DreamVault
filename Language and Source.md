@@ -24,6 +24,18 @@ The extension is intentionally unrelated to the language name.
 
 Keep it.
 
+## Foocode
+
+**Foocode** is the slang for source in `.foo` files.
+
+Dream is the language. Foocode is what you write.
+
+```text
+Did you see bob? He's using agents to write foocode for him!
+```
+
+Use it that way. It is not a file extension, CLI command, or official grammar name.
+
 ## People Write Whatever They Want
 
 A `.foo` file has no grammar.

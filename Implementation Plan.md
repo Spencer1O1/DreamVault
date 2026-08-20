@@ -1,6 +1,8 @@
 **Status:** Preliminary staged plan  
 **Purpose:** Reach a working Dream language without building later semantic machinery too early.
 
+The crate is a **separate workspace**, not this notes vault. The v0 contract is [[Projects/Dream/MVP|MVP]].
+
 ---
 
 ## Initial Rust Layout
@@ -59,29 +61,30 @@ Requirements:
 
 - CLI parsing;
 - `.env`;
-- OpenAI request;
-- file reading;
-- stdout;
-- strict prompt;
-- useful errors.
+- OpenAI tool loop;
+- `list_source_files` and `read_source_file`;
+- `stdout` and `stdin` tools;
+- discard chat text;
+- stricter prompt for `--strict`;
+- useful `DreamError`s.
 
-Single-file support is acceptable for the first spike.
+Single-file support is acceptable for the first spike if the source tools already exist.
 
 ## MVP Phase 2 — Multi-File Resolution
 
-Let the model request other `.foo` files.
+Use the source tools for real projects.
 
 Implement:
 
 - project root;
 - path normalization;
-- sandboxed `read_source_file`;
+- sandboxed list/read;
 - request-loop cycle detection;
 - recorded dependency sets.
 
 Each `.foo` file is one semantic unit from this phase onward.
 
-## MVP Phase 3 — Rust Composition
+## MVP Phase 3 — Composition
 
 Implement:
 
@@ -94,41 +97,31 @@ Pipeline:
 ```text
 Dream units
     ↓
-Composer
+Composer (write_output_file)
     ↓
-Cargo Project
-    ↓
-Builder
+replace -o
 ```
 
-## MVP Phase 4 — Run Support
+No build. Open-ended `-t`.
+
+## MVP Phase 4 — Build and Run
 
 Implement:
 
 ```bash
+dream main.foo -t rust -o ./out --build
 dream main.foo -t rust -o ./out --run
 ```
 
-Forward standard process IO correctly.
+`--run` implies build. Forward standard process IO.
 
-## MVP Phase 5 — Arbitrary Targets
-
-Allow arbitrary strings for:
-
-```bash
--t
---target
-```
-
-Do not require target registration.
-
-## MVP Phase 6 — Known Builders
+## MVP Phase 5 — Known Builders
 
 Add common toolchain support.
 
 Generation remains open-ended.
 
-## MVP Phase 7 — Semantic Cache Foundations
+## MVP Phase 6 — Semantic Cache Foundations
 
 Add file-level semantic metadata infrastructure.
 
@@ -144,7 +137,7 @@ Do not yet attempt sub-file granularity.
 
 Do not wait on a formal semantic core for this phase.
 
-## MVP Phase 8 — Bounded Repair
+## MVP Phase 7 — Bounded Repair
 
 Add build diagnostics and Composer repair.
 
@@ -184,6 +177,7 @@ That future architecture is not decided yet. See [[Projects/Dream/Later Formal S
 
 ## Related
 
+- [[Projects/Dream/MVP|MVP]]
 - [[Projects/Dream/Architecture|Architecture]]
 - [[Projects/Dream/CLI and Execution|CLI and Execution]]
 - [[Projects/Dream/Core Rules|Core Rules]]
