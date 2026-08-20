@@ -25,7 +25,7 @@ dream now --strict app.foo
 
 It does not introduce a parser, linter, or separate source grammar.
 
-The prompt says: do not guess important ambiguity; return a `DreamError` instead.
+The prompt says: do not guess important semantics; return a `DreamError` instead.
 
 ## Default Ambiguity Handling
 

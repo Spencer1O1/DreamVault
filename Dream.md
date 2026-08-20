@@ -1,6 +1,6 @@
 **Status:** Preliminary specification  
 **Name:** Dream  
-**Current stage:** v0 product contract is in [[Projects/Dream/MVP|MVP]]
+**Current stage:** v0 is implemented ([[Projects/Dream/MVP|MVP]]). Next contract: [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
 
 Dream is a programming language for executable pseudocode.
 
@@ -25,6 +25,7 @@ The most important structural rule is:
 ## Project Documents
 
 - [[Projects/Dream/MVP|MVP]]
+- [[Projects/Dream/Artifact Ownership|Artifact Ownership]]
 - [[Projects/Dream/Vision and Principles|Vision and Principles]]
 - [[Projects/Dream/Semantic Units|Semantic Units]]
 - [[Projects/Dream/Language and Source|Language and Source]]
@@ -69,12 +70,13 @@ execute the Dream program immediately using an LLM as the interpreter.
               ┌─────────────┴─────────────┐
               ▼                           ▼
            `now`                      default
-        Interpreter                   Composer
-         stdout/stdin            write_output_file
-              │                           │
-              ▼                           ▼
-       Program Output                replace -o
+        Interpreter                 set_builder
+         stdout/stdin                     │
+              │                           ▼
+       Program Output            per-unit reconcile
                                       --build / --run
 ```
+
+v0 still replaces `-o` and asks for the builder last. The diagram is the next architecture.
 
 Gimbal is not part of the current design. A later formal semantic core is discussed separately in [[Projects/Dream/Later Formal Semantic Core|Later Formal Semantic Core]].

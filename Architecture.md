@@ -16,11 +16,11 @@
                 ┌─────────────┴─────────────┐
                 ▼                           ▼
              `now`                      default
-          Interpreter                   Composer
-           stdout/stdin            write_output_file
-                │                           │
-                ▼                           ▼
-         Program Output              replace -o
+          Interpreter                 set_builder
+           stdout/stdin                     │
+                │                           ▼
+         Program Output            per-unit reconcile
+                                      + project layer
                                             │
                                       --build / --run
                                             │
@@ -28,7 +28,9 @@
                                       Builder / Runner
 ```
 
-This is the current architecture. A later formal semantic core is not part of it. See [[Projects/Dream/Later Formal Semantic Core|Later Formal Semantic Core]]. A later deterministic `now` runtime is also not part of it. See [[Projects/Dream/Later Interpreter Runtime|Later Interpreter Runtime]].
+**v0 (implemented)** still stages and **replaces** `-o`, and asks for the builder after writes. The diagram is the next architecture. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
+
+A later formal semantic core is not part of it. See [[Projects/Dream/Later Formal Semantic Core|Later Formal Semantic Core]]. A later deterministic `now` runtime is also not part of it. See [[Projects/Dream/Later Interpreter Runtime|Later Interpreter Runtime]].
 
 ## The Source Resolver
 
@@ -61,7 +63,7 @@ read_source_file(path)
 
 `list_source_files` returns project-relative `.foo` paths only. No contents.
 
-`read_source_file` returns one unit if it is inside the project.
+`read_source_file` returns one unit if it is inside the project. Compose mode: unlocked unsettled units are composed first (stack); then the read includes the realization. Locked or already-settled reads include artifacts without a nested job. The interpreter does not compose and does not attach artifacts.
 
 The model does not get arbitrary filesystem access.
 
@@ -105,16 +107,14 @@ Composer
 Target Project
 ```
 
-The Composer may choose:
+The Composer may choose, **for the unit it is composing**:
 
-- files;
-- modules;
-- dependencies;
-- frameworks;
+- zero, one, or many target files;
+- modules and layout for those files;
 - target-native idioms;
-- package layout;
-- configuration;
 - entrypoints.
+
+It does not own manifests. It does not get unrestricted write access to `-o`. Each generated path has unit provenance. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
 
 ## Why Composer
 
@@ -148,9 +148,9 @@ Target Python may use:
 FastAPI
 ```
 
-The Composer creates a complete target-native project.
+v0 writes a complete tree through `write_output_file` into a staging directory, then replaces `-o`.
 
-It writes only through `write_output_file`, into a staging directory for `-o`. It does not get interpreter runtime tools. See [[Projects/Dream/Targets and Composition|Targets and Composition]].
+Next: write in place, only artifacts owned by the current unit, after the builder is declared. Project-owned files go through Dream’s target layer. It does not get interpreter runtime tools. See [[Projects/Dream/Targets and Composition|Targets and Composition]].
 
 ## The Builder
 
@@ -172,6 +172,8 @@ Go → go build
 C → clang/gcc/cc
 Python → no native build required
 ```
+
+If the declared toolchain is not installed, the Builder fails with a short install hint. It does not install tools.
 
 The Builder does not decide Dream semantics.
 
@@ -215,6 +217,7 @@ DreamError: target project failed to build.
 ## Related
 
 - [[Projects/Dream/MVP|MVP]]
+- [[Projects/Dream/Artifact Ownership|Artifact Ownership]]
 - [[Projects/Dream/Projects and Imports|Projects and Imports]]
 - [[Projects/Dream/CLI and Execution|CLI and Execution]]
 - [[Projects/Dream/Targets and Composition|Targets and Composition]]

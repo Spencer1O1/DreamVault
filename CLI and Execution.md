@@ -47,14 +47,13 @@ Running:
 dream server.foo -t rust -o ./out
 ```
 
-means:
+**v0 (implemented):** write a complete tree through `write_output_file`, then replace `./out`.
 
-1. start from the entry `.foo` file;
-2. determine meaning, listing and reading other `.foo` units as needed;
-3. write a complete target project through `write_output_file`;
-4. replace `./out` with the staged tree.
+**Next:** declare the builder first, then reconcile into the existing `./out` project. Unlocked units may be recomposed. Locked units and unmanaged files stay. There is no `redream` command. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
 
-It does not build. Add `--build` or `--run` for that.
+It does not build unless `--build` or `--run` is passed.
+
+Compose prints each tool call on stderr (name and path, not file contents). `dream now` does not.
 
 The generated project is a first-class artifact.
 
@@ -153,7 +152,11 @@ Example:
 dream hello.foo -t cobol -o ./out
 ```
 
-may successfully produce a COBOL project even if Dream cannot locate or safely invoke a COBOL toolchain.
+may successfully produce a COBOL project. After compose settles, Dream asks for a builder; COBOL should be `unsupported`. `--build` / `--run` then do not run.
+
+The builder is the declared toolchain, not a guess from `-t` or from the output tree. **Next:** declare it before any output writes. See [[Projects/Dream/Targets and Composition|Targets and Composition]].
+
+If that toolchain is missing locally, `--build` / `--run` error and tell the user how to install it. Dream does not install it. The composed `-o` folder is already there.
 
 ## Output Directory
 
@@ -188,9 +191,9 @@ out/
 
 The project should resemble ordinary hand-maintainable source code.
 
-`-o` **replaces the whole folder**.
+**v0:** `-o` **replaces the whole folder**. Dream stages the new tree, then swaps it in, so a failed compose does not half-wipe the destination.
 
-Dream stages the new tree, then swaps it in, so a failed compose does not half-wipe the destination.
+**Next:** `-o` is an existing project. Normal `dream` reconciles in place (compose stack from the entry). Unknown files are user-owned. Files in `-o` but no provenance → error. `-t` disagrees with the store → error unless `--fresh`.
 
 ## Generated Projects Are First-Class
 
@@ -219,14 +222,18 @@ dream server.foo -t rust -o ./out --build
 Pipeline:
 
 ```text
-compose
-↓
-replace -o
+compose / reconcile
 ↓
 build
 ```
 
+v0 still `replace -o` between compose and build.
+
 Default `dream` does not build.
+
+A failed build may go back to the composer a bounded number of times. A failed run does not. Repair must obey artifact ownership.
+
+`--no-warn` treats toolchain warnings as a failed build, so they repair too. It is not `--strict`.
 
 ## `--run`
 
@@ -237,9 +244,7 @@ dream server.foo -t rust -o ./out --run
 Pipeline:
 
 ```text
-compose
-↓
-replace -o
+compose / reconcile
 ↓
 build
 ↓
@@ -249,6 +254,26 @@ run
 `--run` implies build.
 
 `dream now` does not use `--run`. Interpretation is already execution.
+
+## `--fresh`
+
+Not in v0. Next contract:
+
+```bash
+dream app.foo -t rust -o ./out --fresh
+```
+
+Reset Dream’s realization: drop provenance, locks, and Dream-owned paths; leave unmanaged files; compose again. Ignores target-specific locks. Not `--clean` (that means “delete build artifacts” in too many toolchains).
+
+## Locks
+
+Not in v0. Next:
+
+```bash
+dream lock server.foo -t rust
+```
+
+Freezes that unit’s current target artifact set. Normal `dream` does not mutate those files. No `redream` command.
 
 ## `--release`
 
@@ -284,6 +309,7 @@ Do not prematurely build a generalized provider abstraction.
 ## Related
 
 - [[Projects/Dream/MVP|MVP]]
+- [[Projects/Dream/Artifact Ownership|Artifact Ownership]]
 - [[Projects/Dream/Architecture|Architecture]]
 - [[Projects/Dream/Targets and Composition|Targets and Composition]]
 - [[Projects/Dream/Semantics and Strictness|Semantics and Strictness]]

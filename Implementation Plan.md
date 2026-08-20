@@ -1,13 +1,13 @@
 **Status:** Phase list only. Do not track checkboxes here.  
-**Purpose:** Reach a working Dream language without building later semantic machinery too early.
+**Purpose:** v0 is implemented. Next work is pre-Gimbal artifact ownership, not a formal semantic core.
 
-The crate is a **separate workspace**, not this notes vault. The v0 contract is [[Projects/Dream/MVP|MVP]]. Progress is `docs/plan.md` in the crate.
+The crate is a **separate workspace**, not this notes vault. Implemented contract: [[Projects/Dream/MVP|MVP]]. Next contract: [[Projects/Dream/Artifact Ownership|Artifact Ownership]]. Progress is `docs/plan.md` in the crate.
 
 ---
 
 ## Initial Rust Layout
 
-Start small:
+Start small (historical):
 
 ```text
 dream/
@@ -34,152 +34,65 @@ As needed:
 ```text
 src/
 ├── source/
-│   ├── project.rs
-│   ├── unit.rs
-│   ├── resolver.rs
-│   └── files.rs
 ├── interpreter/
 ├── composer/
 ├── builder/
-├── runner/
-├── semantics/
-└── cache/
+├── provenance/    # unit → target artifacts; not an IR
+└── project/       # known-builder manifest layer
 ```
 
-The `semantics` and `cache` layers should not be built until they are required.
+Do not add a `semantics/` / Gimbal layer until that work is actually started.
 
-## MVP Phase 1 — Interpreter
+## MVP Phases 1–6 — Done
 
-Implement:
+Interpreter, multi-file, compose (replace `-o`), known builders (asked **after** writes), build/run, bounded repair. Progress: crate `docs/plan.md`.
+
+## Phase 7 — Builder First
+
+Ask `set_builder` once **before** output writes. `-t` stays an open-ended hint. `unsupported` / no pick → compose only.
+
+See [[Projects/Dream/Targets and Composition|Targets and Composition]].
+
+## Phase 8 — Provenance and In-Place Reconcile
+
+Stop treating `-o` as disposable. Compose stack from the entry: writes belong to the current unit; `read_source_file` of an unlocked unsettled unit recurses. Persist unit → artifact paths in `-o`. Enforce ownership on write/delete. Unknown files stay. No store + files, or `-t` mismatch → error. `--fresh` drops Dream-owned paths only and ignores locks.
+
+No one-`.foo`-to-one-file rule. No lock CLI yet. No project tools yet. No IR.
+
+See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
+
+## Phase 9 — Project Layer
+
+Known builders: Dream owns manifests. `set_dependencies` is names plus optional features; Dream picks versions. Package name from entry stem on init only. Dream does not generate target-language wiring. `unsupported`: first writer owns manifest-shaped files.
+
+## Phase 10 — Target-Specific Locks
 
 ```bash
-dream now main.foo
-dream now --strict main.foo
+dream lock server.foo -t rust
 ```
 
-Requirements:
-
-- CLI parsing;
-- `.env`;
-- OpenAI tool loop;
-- `list_source_files` and `read_source_file`;
-- `stdout` and `stdin` tools;
-- discard chat text;
-- stricter prompt for `--strict`;
-- useful `DreamError`s.
-
-Single-file support is acceptable for the first spike if the source tools already exist.
-
-## MVP Phase 2 — Multi-File Resolution
-
-Use the source tools for real projects.
-
-Implement:
-
-- project root;
-- path normalization;
-- sandboxed list/read;
-- request-loop cycle detection;
-- recorded dependency sets.
-
-Each `.foo` file is one semantic unit from this phase onward.
-
-## MVP Phase 3 — Composition
-
-Implement:
-
-```bash
-dream main.foo -t rust -o ./out
-```
-
-Pipeline:
-
-```text
-Dream units
-    ↓
-Composer (write_output_file)
-    ↓
-replace -o
-```
-
-No build. Open-ended `-t`.
-
-## MVP Phase 4 — Build and Run
-
-Implement:
-
-```bash
-dream main.foo -t rust -o ./out --build
-dream main.foo -t rust -o ./out --run
-```
-
-`--run` implies build. Forward standard process IO.
-
-## MVP Phase 5 — Known Builders
-
-Add common toolchain support.
-
-Generation remains open-ended.
-
-## MVP Phase 6 — Semantic Cache Foundations
-
-Add file-level semantic metadata infrastructure.
-
-At minimum:
-
-```text
-canonical path
-source hash
-semantic status
-```
-
-Do not yet attempt sub-file granularity.
-
-Do not wait on a formal semantic core for this phase.
-
-## MVP Phase 7 — Bounded Repair
-
-Add build diagnostics and Composer repair.
-
-Keep the repair loop explicitly bounded.
-
-## Later — Semantic Locking
-
-Allow semantic meaning for a `.foo` file to be persisted.
+Freeze that unit’s current target artifact set and source hash. Normal `dream` skips it. Source hash mismatch or missing locked artifact → error. Hand-edited locked files stay. No `redream` command.
 
 See [[Projects/Dream/Semantic Locking and Inspection|Semantic Locking and Inspection]].
 
-## Later — Incremental Re-Dreaming
+## Later — Unchanged-Unit Skip
 
-When source changes:
-
-```text
-detect changed .foo units
-↓
-invalidate only those units
-↓
-re-dream them
-↓
-compare semantic interfaces
-↓
-propagate invalidation only when necessary
-```
-
-This should eventually make Dream practical for large projects.
+Source hash so unlocked units that have not changed are not sent to the Composer again.
 
 See [[Projects/Dream/Cache and Incremental Semantics|Cache and Incremental Semantics]].
 
 ## Later — Formal Semantic Representation
 
-Once a formal semantic core exists, Dream may elaborate each `.foo` unit into a corresponding formal fragment.
+Once a formal semantic core exists, Dream may elaborate each `.foo` unit into a corresponding formal fragment. Locks become target-independent. Provenance still tracks translated files.
 
 That future architecture is not decided yet. See [[Projects/Dream/Later Formal Semantic Core|Later Formal Semantic Core]].
 
-A later deterministic `dream now` runtime is also not decided yet. See [[Projects/Dream/Later Interpreter Runtime|Later Interpreter Runtime]]. Do not start that work during the MVP phases.
+A later deterministic `dream now` runtime is also not decided yet. See [[Projects/Dream/Later Interpreter Runtime|Later Interpreter Runtime]].
 
 ## Related
 
 - [[Projects/Dream/MVP|MVP]]
+- [[Projects/Dream/Artifact Ownership|Artifact Ownership]]
 - [[Projects/Dream/Architecture|Architecture]]
 - [[Projects/Dream/CLI and Execution|CLI and Execution]]
 - [[Projects/Dream/Core Rules|Core Rules]]

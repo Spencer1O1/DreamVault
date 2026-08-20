@@ -94,6 +94,8 @@ meaning of each .foo file
 which other units a file needs, until that has been recorded
 ```
 
+Before Gimbal, the accepted realization of a unit for a target is that unit’s artifact set. One `.foo` file may own zero, one, or many generated files. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
+
 After semantic interpretation, Dream should eventually return to a deterministic representation:
 
 ```text
@@ -113,5 +115,6 @@ What that formal representation is remains open. See [[Projects/Dream/Later Form
 ## Related
 
 - [[Projects/Dream/Semantic Units|Semantic Units]]
+- [[Projects/Dream/Artifact Ownership|Artifact Ownership]]
 - [[Projects/Dream/Language and Source|Language and Source]]
 - [[Projects/Dream/Core Rules|Core Rules]]

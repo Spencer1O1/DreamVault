@@ -49,47 +49,33 @@ If the Composer can generate it, generation may succeed.
 
 ## Known Builders
 
-Dream may provide known Builder support for common ecosystems.
+`-t` is an open-ended compose hint. A **builder** is a toolchain Dream will actually exec (`cargo`, `go`, …), not a language vibe (`cpp`, `embedded`).
 
-Initial useful set:
+**v0:** after the write loop settles, Dream asks once for a builder.
 
-- Rust;
-- Go;
-- C;
-- C++;
-- Python;
-- JavaScript;
-- TypeScript;
-- Java;
-- Kotlin.
+**Next:** ask **before** any output writes. Known builders unlock Dream’s project layer (`add_dependency`, …). No pick, or `unsupported`, means Dream will not `--build`, `--run`, or repair. Composition may still succeed (generic unit-owned writes).
 
-This list does not constrain Composer targets.
+Do not infer the builder from the output tree. Do not take build or run argv from the model. Do not put `set_builder` in the write-loop catalog.
+
+This list does not constrain `-t`. Vague targets (Arduino, COBOL, …) stay `unsupported` until that builder exists.
+
+If a known builder is declared but that toolchain is not installed, Dream returns an error with a short install hint. It does not install the toolchain. `unsupported` means Dream has no builder; a missing `cargo` means the user does not have it.
 
 ## Generated Build Metadata
 
-Unknown targets may eventually provide structured build metadata.
-
-Conceptually:
-
-```json
-{
-  "target": "cobol",
-  "build": ["cobc", "-x", "src/main.cob", "-o", "app"],
-  "run": ["./app"]
-}
-```
-
-Dream must validate such metadata before executing anything.
+Do not do this. A JSON `build` / `run` line from the model is shell access. Unknown targets are `unsupported`.
 
 ## Composition and Building Stay Separate
 
 Core invariant:
 
-> **The Composer writes the target project. The Builder invokes toolchains.**
+> **The Composer realizes units. Dream owns project infrastructure. The Builder invokes toolchains.**
 
-The Composer should not receive unrestricted shell access.
+The Composer should not receive unrestricted shell or `-o` access.
 
-It writes only through `write_output_file`, into a staging directory for `-o`. After the compose loop settles, Dream replaces the output folder.
+**v0:** writes through `write_output_file` into a staging directory; Dream replaces `-o`.
+
+**Next:** writes only unit-owned artifacts in place. Manifests go through target-aware project tools. Unknown files stay. `--fresh` is the wipe. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
 
 The Composer does not get `stdout`, `stdin`, or data-file tools. Those belong to `dream now`.
 
@@ -97,21 +83,23 @@ Default compose does not build. See `--build` and `--run` in [[Projects/Dream/CL
 
 ## Build Repair
 
-Future composition may use bounded repair.
+`--build` / `--run` may repair a failed **build** (not a failed run, not a missing toolchain, not `unsupported`). `--no-warn` treats toolchain warnings as a failed build.
 
 ```text
-compose project
+reconcile
 ↓
-build/check
+build
 ↓
 toolchain diagnostics
 ↓
-Composer repair
+Composer repair (same ownership rules, writes stay in `-o`)
 ↓
-build/check
+build
 ```
 
-Repair must use an explicit maximum number of attempts.
+v0 still `replace -o` before the first build.
+
+Repair must use an explicit maximum number of attempts. The builder is not asked again. After provenance exists: repair runs with the stack empty; it may only overwrite existing unlocked unit-owned paths (owner from the map). No new files, no `set_dependencies`. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
 
 ## Generated Project Is Not the Semantic IR
 
@@ -119,21 +107,26 @@ A Rust, Go, or Python output project is a target representation.
 
 It is not Dream's formal semantic representation.
 
-Initial architecture:
+Pre-Gimbal architecture:
 
 ```text
 Dream units
     ↓
-Composer
+builder first
+    ↓
+per-unit Composer (0..N artifacts each)
+    ↓
+project-layer reconcile
     ↓
 Target Project
 ```
 
-A later architecture may introduce a formal semantic representation before target generation. That is not decided yet. See [[Projects/Dream/Later Formal Semantic Core|Later Formal Semantic Core]].
+A later architecture may introduce a formal semantic representation before target generation. That is not decided yet. Do not fake it. See [[Projects/Dream/Later Formal Semantic Core|Later Formal Semantic Core]].
 
 ## Related
 
 - [[Projects/Dream/MVP|MVP]]
+- [[Projects/Dream/Artifact Ownership|Artifact Ownership]]
 - [[Projects/Dream/CLI and Execution|CLI and Execution]]
 - [[Projects/Dream/Architecture|Architecture]]
 - [[Projects/Dream/Core Rules|Core Rules]]

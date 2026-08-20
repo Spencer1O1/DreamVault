@@ -17,11 +17,13 @@
 
 ## Composition Rule
 
-> **The Composer creates target projects. The Builder builds them.**
+> **The Composer realizes `.foo` units. Dream's project layer owns infrastructure. The Builder invokes toolchains.**
 
 ## Target Rule
 
 > **Target generation is open-ended. Builder support is optional.**
+
+Declare the builder before output writes. Do not infer it from the tree.
 
 ## Capability Rule
 
@@ -39,13 +41,47 @@ Source tools, interpreter runtime tools, and composer output tools are separate 
 
 > **Generated target projects are first-class outputs and remain useful without Dream.**
 
+## Multi-Artifact Rule
+
+> **One semantic unit may own zero, one, or many target artifacts.**
+
+Do not require one `.foo` file to map to one generated file.
+
+## Provenance Rule
+
+> **Every Composer-generated artifact is owned by exactly one `.foo` unit.**
+
+## Project Artifact Rule
+
+> **Dream owns project infrastructure. The Composer does not edit those files directly.**
+
+## Unmanaged Artifact Rule
+
+> **Unknown files are user-owned. Normal composition must not delete or overwrite them.**
+
+## Reconciliation Rule
+
+> **Normal `dream` reconciles in place. It does not clear `-o`.**
+
+There is no `redream` command. `--fresh` is the destructive regenerate.
+
+## Pre-Gimbal Lock Rule
+
+> **Before Gimbal, locking a `.foo` unit freezes its current target-specific artifact set.**
+
+After Gimbal, locks freeze target-independent formal meaning. Do not fake that IR now.
+
 ## Incremental Semantics
 
-> **Only stale or invalid semantic units should be re-dreamed.**
+> **Only unlocked units that need reconciliation should be recomposed.**
+
+Normal `dream` is that operation.
 
 ## Persistent Meaning
 
 > **Once a Dream unit has accepted meaning, that meaning persists until invalidated.**
+
+Before Gimbal, accepted meaning for a target is that unit's artifact set and contents.
 
 ## Interface-Aware Invalidation
 
@@ -58,6 +94,7 @@ Source tools, interpreter runtime tools, and composer output tools are separate 
 ## Related
 
 - [[Projects/Dream/Semantic Units|Semantic Units]]
+- [[Projects/Dream/Artifact Ownership|Artifact Ownership]]
 - [[Projects/Dream/Architecture|Architecture]]
 - [[Projects/Dream/Runtime and Capabilities|Runtime and Capabilities]]
 - [[Projects/Dream/Vision and Principles|Vision and Principles]]

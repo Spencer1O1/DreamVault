@@ -1,5 +1,5 @@
-**Status:** Ready to implement  
-**Purpose:** The v0 product contract. An implementer should follow this file plus [[Projects/Dream/Core Rules|Core Rules]]. The rest of the vault is background. Do not build cache, locking, repair, or a formal semantic core.
+**Status:** Implemented  
+**Purpose:** The v0 product contract that was built. An implementer of *current* crate behavior should follow this file plus [[Projects/Dream/Core Rules|Core Rules]]. The next contract is [[Projects/Dream/Artifact Ownership|Artifact Ownership]] (in-place reconcile, provenance, builder first, `--fresh`, target-specific locks).
 
 The Rust crate lives in a **separate workspace**, not this notes vault.
 
@@ -9,18 +9,19 @@ The Rust crate lives in a **separate workspace**, not this notes vault.
 
 ```bash
 dream now [--strict] <file.foo>
-dream [--strict] <file.foo> -t <target> -o <dir>
-dream [--strict] <file.foo> -t <target> -o <dir> --build
-dream [--strict] <file.foo> -t <target> -o <dir> --run
+dream [--strict] [--no-warn] <file.foo> -t <target> -o <dir>
+dream [--strict] [--no-warn] <file.foo> -t <target> -o <dir> --build
+dream [--strict] [--no-warn] <file.foo> -t <target> -o <dir> --run
 ```
 
 - `dream now` interprets. Observable output is whatever the model sends through `stdout`.
 - Default `dream` **composes only**. It does not build or run.
-- `--build` composes, then builds if Dream knows a toolchain for `-t`.
+- `--build` composes, then builds if Dream knows a toolchain for the declared builder.
 - `--run` composes, builds, and runs.
 - `--strict` is a stricter prompt. It is not a parser or linter.
+- `--no-warn` treats toolchain warnings as a failed build. It is compose-only.
 - `-t` is an open-ended string.
-- `-o` is required for compose. Dream **replaces the whole folder**. Stage the new tree, then swap, so a failed compose does not half-wipe the destination.
+- `-o` is required for compose. **v0 replaces the whole folder.** Stage the new tree, then swap, so a failed compose does not half-wipe the destination.
 
 v0 config:
 
@@ -71,9 +72,11 @@ Later, same family: `read_file`, `write_file`, `http_request`. Still executed by
 
 `write_output_file(path, contents)`
 
-- writes into a staging directory for `-o`
+- **v0:** writes into a staging directory for `-o`
 - path must stay under the output root
 - after the compose loop settles, Dream replaces `-o` with the staged tree
+
+**v0 asks `set_builder` after the write loop.** Next contract: declare the builder first. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
 
 The Composer does not get `stdout`, `stdin`, or data-file tools. It is writing a project, not running the program.
 
@@ -83,7 +86,7 @@ The Interpreter does not get `write_output_file`.
 
 A run is finished when the model stops calling tools, or hits a turn cap.
 
-Do not treat a unit as complete, or swap `-o`, until source requests have settled.
+Do not treat a unit as complete, or (in v0) swap `-o`, until source requests have settled.
 
 Record the requested `.foo` paths. That is the source graph for this run.
 
@@ -111,16 +114,20 @@ Interpreter: you execute this Dream program. Request source instead of inventing
 
 Composer: you write a complete, hand-maintainable target project under `-o`. Request source instead of inventing other `.foo` files. Write files only through `write_output_file`. Do not execute the program. Do not chat.
 
-`--strict` adds: do not guess important ambiguity; return a `DreamError` instead.
+`--strict` adds: do not guess important semantics; return a `DreamError` instead.
 
-## Out of Scope
+## Out of Scope for v0
 
-- semantic cache, lock, inspect, redream
+These were not built in v0. Several are now specified for the next work:
+
+- in-place reconcile, provenance, `--fresh` — [[Projects/Dream/Artifact Ownership|Artifact Ownership]]
+- semantic lock / inspect — no `redream` command; normal `dream` reconciles
 - `dream.toml`
-- repair loops
 - data-file / HTTP tools
 - a formal IR or Gimbal
 - provider plugins
+
+v0 **did** add bounded build repair (`DREAM_REPAIR_CAP`) and `--no-warn`. Those stay.
 
 ## Suggested First Examples
 
@@ -130,6 +137,7 @@ Composer: you write a complete, hand-maintainable target project under `-o`. Req
 
 ## Related
 
+- [[Projects/Dream/Artifact Ownership|Artifact Ownership]]
 - [[Projects/Dream/Architecture|Architecture]]
 - [[Projects/Dream/CLI and Execution|CLI and Execution]]
 - [[Projects/Dream/Runtime and Capabilities|Runtime and Capabilities]]

@@ -1,5 +1,5 @@
 **Status:** Later, after the first composition pipeline  
-**Purpose:** Define file-level semantic caching, re-dreaming, and interface-aware invalidation.
+**Purpose:** Define file-level semantic caching, recompose, and interface-aware invalidation. There is no `redream` command.
 
 ---
 
@@ -81,19 +81,15 @@ semantic hash unchanged
 
 could mean the pseudocode was rewritten without changing the accepted program semantics.
 
-## Re-Dreaming
+## Recompose
 
-**Re-dreaming** means recomputing the semantic meaning of a specific `.foo` unit.
+**Recompose** means running the Composer again for a specific unlocked `.foo` unit.
 
-Conceptually:
+There is **no** `redream` command. Normal `dream` reconciles the graph: locked units stay, unlocked units may be recomposed.
 
-```bash
-dream redream users/active.foo
-```
+Because `.foo` files are semantic atoms, that boundary is deterministic.
 
-This should invalidate that semantic unit and derive its meaning again.
-
-Because `.foo` files are semantic atoms, re-dreaming has a deterministic boundary.
+First reconcile (Phase 8) may recompose every unlocked unit. Skipping unchanged source hashes is later.
 
 ## Incremental Semantics
 
@@ -113,15 +109,15 @@ If only:
 oldest.foo
 ```
 
-changes, Dream should ideally reuse the accepted meaning of:
+changes, Dream should ideally reuse the accepted realization of:
 
 ```text
 active.foo
 ```
 
-and only re-dream the changed unit.
+and only recompose the changed unit.
 
-No unrelated LLM calls are required.
+No unrelated LLM calls are required. Before Gimbal, “accepted realization” is that unit’s target artifact set. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
 
 ## Interface-Aware Invalidation
 
@@ -150,7 +146,7 @@ Conceptually:
 ```text
 source changed?
     ↓ yes
-re-dream unit
+recompose unit
     ↓
 semantic interface changed?
     ├── no  → dependents remain valid
@@ -331,7 +327,7 @@ dependency metadata
 changed units
 ```
 
-The service only re-dreams invalid semantic units.
+The service only recomposes invalid semantic units.
 
 Example project has 2,000 Dream units.
 
@@ -348,7 +344,7 @@ Desired hosted behavior:
 ↓
 1 semantic cache miss
 ↓
-re-dream that unit
+recompose that unit
 ↓
 validate its interface
 ↓
@@ -366,6 +362,7 @@ This is essential for scalability.
 ## Related
 
 - [[Projects/Dream/Semantic Units|Semantic Units]]
+- [[Projects/Dream/Artifact Ownership|Artifact Ownership]]
 - [[Projects/Dream/Semantic Locking and Inspection|Semantic Locking and Inspection]]
 - [[Projects/Dream/Semantics and Strictness|Semantics and Strictness]]
 - [[Projects/Dream/Later Formal Semantic Core|Later Formal Semantic Core]]

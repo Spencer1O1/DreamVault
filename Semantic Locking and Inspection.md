@@ -1,94 +1,86 @@
-**Status:** Later  
-**Purpose:** Persist accepted meaning for `.foo` units and make semantic state inspectable.
+**Status:** Later (Phase 10). Needs provenance (Phase 8).  
+**Purpose:** Persist accepted target realizations for `.foo` units and make that state inspectable.
+
+There is **no** `redream` command. Normal `dream` is the reconcile. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
 
 ---
 
-## Locking
+## Pre-Gimbal Locks
 
-Dream should support locking accepted semantics.
-
-Conceptually:
+Before Gimbal, a lock is **target-specific**.
 
 ```bash
-dream lock users/active.foo
+dream lock server.foo -t rust
 ```
 
-A locked semantic unit means:
+Means: preserve the currently accepted artifact set **and contents** for that unit in that target.
 
-> Do not reinterpret this source unit automatically unless its lock is explicitly invalidated or a required semantic dependency makes the existing meaning unusable.
+```text
+server.foo [locked for rust]
+  → src/server.rs
+  → src/routes.rs
+```
 
-Exact lock behavior must remain compatible with correctness.
+Normal `dream` must not let the Composer mutate those paths.
 
-A lock should never force Dream to use an invalid semantic result.
+Source-oriented: the user locks the `.foo` file. Dream already knows the generated set.
 
-Potential commands:
+Do not invent target-independent locked meaning before Gimbal.
+
+`read_source_file` still returns the `.foo`. In compose mode, if Dream has a realization (locked, or settled / just composed this run), the result includes those artifact paths and contents. An unlocked unit that is not settled yet is composed first (nested job), then returned the same way. The interpreter (`dream now`) does not attach artifacts and does not recurse into compose.
+
+See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
+
+---
+
+## Unlock
 
 ```bash
-dream lock users/active.foo
-dream unlock users/active.foo
-dream redream users/active.foo
+dream unlock server.foo -t rust
 ```
 
-Exact CLI may change.
+Then a normal `dream` may recompose that unit.
 
-The underlying unit remains the `.foo` file.
+`--fresh` ignores target-specific locks.
+
+If the locked unit’s **source hash** no longer matches the hash stored at lock time: `DreamError`. Unlock or restore the `.foo`.
+
+If a locked artifact path is **missing**: `DreamError`. Restore it, unlock, or `--fresh`. Do not compose it from foocode.
+
+If a locked artifact was **edited** by hand: leave it. Dream still will not overwrite it.
+
+---
 
 ## File Requests Do Not Block Locking
 
-A lock records the *result* of a dream, not a parsed import list.
+A lock records the *result* of a compose, not a parsed import list.
 
-After `main.foo` is dreamed, Dream already has:
+After `server.foo` is composed, Dream has:
 
 ```text
-accepted meaning
-public interface
-requested files
-source hash
+artifact set
+contents
+requested .foo files
+source hash (when that exists)
 ```
 
-Locking that unit freezes those. Later runs reuse them. The model is not asked again which files it would like.
-
-That is why informal file requests still allow locking:
-
-- unit identity is the path, which is mechanical;
-- the first dream produces meaning and a dependency set;
-- the lock persists both.
-
-`dream lock .` means: persist every unit that has already been dreamed. Units that have never been dreamed are dreamed first, or left unlocked.
-
-Informal dependencies make locking *more* important, not less. Without a formal `import` line, the choice “this unit uses `users/active.foo`” *is* part of accepted meaning. Locking is how that choice stops drifting.
+Locking freezes the artifacts. Informal file requests are part of how the unit was dreamed; the recorded graph can stay with the unit.
 
 If a requested dependency later becomes unusable (missing file, broken interface), the lock is stale. A lock must never force an invalid result.
 
-## Project Locking
-
-Possible:
-
-```bash
-dream lock .
-```
-
-Meaning:
-
-> Persist the currently accepted semantic representation of all resolved `.foo` units.
-
-This could create a stable semantic snapshot of the project.
+---
 
 ## Semantic Lock Is Not Source Lock
 
-The programmer can still edit:
+The programmer can still edit `server.foo`.
 
-```text
-users/active.foo
-```
+If source and lock diverge, Dream should report the unit as stale rather than silently pretending they match. First lock CLI does not have to implement inspect.
 
-A semantic lock records accepted meaning.
+---
 
-If source and lock diverge, Dream should clearly report the unit as stale rather than silently pretending they match.
+## States
 
-## Semantic States
-
-Possible internal states:
+Possible:
 
 ```text
 Missing
@@ -98,97 +90,35 @@ Stale
 Invalid
 ```
 
-Example:
+Exact state design can evolve. Do not persist a speculative enum before lock CLI exists.
 
-```text
-users/active.foo    Valid
-users/oldest.foo    Stale
-users/save.foo      Locked
-```
+---
 
-Exact state design can evolve.
-
-## Inspecting Semantic State
-
-Future:
+## Inspecting (Later)
 
 ```bash
-dream inspect users/active.foo
+dream inspect server.foo
 ```
 
-could show:
+could show path, source unchanged?, lock, artifact set, dependencies.
 
-```text
-Unit:
-  users/active.foo
+`dream inspect .` could summarize the project.
 
-Source:
-  unchanged
+Not required for Phase 10.
 
-Semantic state:
-  locked
+---
 
-Interface:
-  List<User> → List<User>
+## After Gimbal
 
-Dependencies:
-  models/user.foo
+A lock should freeze formal meaning. Provenance still tracks the translated files. Changing `-t` should not require re-elaboration.
 
-Target-independent:
-  yes
-```
+That is later. See [[Projects/Dream/Later Formal Semantic Core|Later Formal Semantic Core]].
 
-## Project Inspection
-
-Possible:
-
-```bash
-dream inspect .
-```
-
-Output could summarize:
-
-```text
-main.foo
-  valid
-
-users/load.foo
-  valid
-
-users/active.foo
-  locked
-
-users/oldest.foo
-  stale
-  source changed
-
-dashboard/render.foo
-  valid
-  depends on users/oldest.foo
-```
-
-## Semantic Graph Inspection
-
-Possible future command:
-
-```bash
-dream inspect . --semantic-graph
-```
-
-Conceptual graph:
-
-```text
-main.foo
-├── users/load.foo
-├── users/active.foo
-└── users/oldest.foo
-    └── models/user.foo
-```
-
-with metadata showing semantic status.
+---
 
 ## Related
 
+- [[Projects/Dream/Artifact Ownership|Artifact Ownership]]
 - [[Projects/Dream/Semantic Units|Semantic Units]]
 - [[Projects/Dream/Cache and Incremental Semantics|Cache and Incremental Semantics]]
 - [[Projects/Dream/CLI and Execution|CLI and Execution]]

@@ -13,15 +13,17 @@ A later architecture may introduce a precise, typed program representation betwe
 
 Nothing below is a current commitment.
 
-The current pipeline remains:
+The pre-Gimbal pipeline remains:
 
 ```text
 Dream units
     ↓
-Composer
+Composer (0..N target artifacts per unit)
     ↓
 Target Project
 ```
+
+Locks, before this core exists, freeze those artifacts. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
 
 See [[Projects/Dream/Architecture|Architecture]] and [[Projects/Dream/Implementation Plan|Implementation Plan]].
 

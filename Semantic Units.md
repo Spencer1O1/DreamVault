@@ -13,7 +13,9 @@ Dream does not attempt to deterministically discover function, declaration, or s
 
 The filesystem provides those boundaries.
 
-A `.foo` file is the smallest independently interpreted, cached, locked, invalidated, and re-dreamed unit.
+A `.foo` file is the smallest independently interpreted, cached, locked, invalidated, and recomposed unit.
+
+It may realize as **zero, one, or many** target artifacts. The unit is the `.foo` file, not a generated path. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
 
 This rule is foundational to Dream's architecture.
 
@@ -55,7 +57,7 @@ This gives Dream deterministic:
 - cache keys;
 - lock boundaries;
 - invalidation boundaries;
-- re-dream boundaries.
+- recompose boundaries.
 
 Trying to detect internal units through the LLM would make caching and invalidation circular:
 
@@ -146,7 +148,7 @@ The path can act as the stable structural key for:
 - semantic caching;
 - locks;
 - diagnostics;
-- re-dreaming;
+- recompose;
 - dependency edges;
 - source hashes;
 - dependency metadata;
@@ -192,7 +194,7 @@ This is not merely a style preference.
 It improves:
 
 - semantic caching;
-- re-dreaming;
+- recompose;
 - dependency tracking;
 - locking;
 - model context size;
@@ -223,5 +225,6 @@ print each user's name
 ## Related
 
 - [[Projects/Dream/Projects and Imports|Projects and Imports]]
+- [[Projects/Dream/Artifact Ownership|Artifact Ownership]]
 - [[Projects/Dream/Cache and Incremental Semantics|Cache and Incremental Semantics]]
 - [[Projects/Dream/Core Rules|Core Rules]]
