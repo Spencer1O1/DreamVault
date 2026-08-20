@@ -1,11 +1,11 @@
 **Status:** Preliminary  
-**Purpose:** Define Dream source files, recommended notation, and comments.
+**Purpose:** Define Dream source files and what is *not* a syntax.
 
 ---
 
 ## Source Extension
 
-Canonical Dream source files use:
+Dream source files use:
 
 ```text
 .foo
@@ -24,11 +24,17 @@ The extension is intentionally unrelated to the language name.
 
 Keep it.
 
-## Dream Source Style
+## People Write Whatever They Want
 
-Dream should encourage pseudocode that still looks like programming.
+A `.foo` file has no grammar.
 
-Good:
+The programmer can write ordinary pseudocode, mixed notation, prose, diagrams in text, notes, or anything else that conveys the unit's meaning.
+
+Dream interprets that meaning.
+
+It does not lock the programmer into a comment style, statement style, or official notation inside the file.
+
+These are all valid source, if they describe one semantic unit:
 
 ```text
 users = load users
@@ -38,25 +44,25 @@ for user in users:
         print user.name
 ```
 
-Also good:
-
 ```text
 take all active users
 
 print each one's name
 ```
 
-Less ideal:
-
 ```text
-Please make me an app that loads some users and displays them somehow.
+only the visible accounts — ignore deactivated ones
 ```
 
-Dream may understand prose-heavy source, but the language should encourage clear program intent rather than generic prompting.
+Notes and asides are just part of the file.
 
-## Recommended Style
+There is no comment syntax.
 
-Documentation should prefer readable pseudocode such as:
+`//`, `#`, `/* */`, parentheses, or a sentence in English are all just text the interpreter reads with everything else.
+
+## What Documentation Shows
+
+Dream docs may show readable pseudocode such as:
 
 ```text
 import "./users/active.foo"
@@ -69,27 +75,9 @@ for user in users:
     print user.name
 ```
 
-Recommended syntax is a convention.
+That is an example, not a required style.
 
-It does not imply a complete parser grammar.
-
-## Comments
-
-Canonical comments use:
-
-```text
-// comment
-```
-
-Example:
-
-```text
-// only return accounts visible to the current user
-
-return visible accounts
-```
-
-Other styles may sometimes be understood, but `//` is the official form.
+The only source-level thing that needs a mechanical form is how one file names another file. See [[Projects/Dream/Projects and Imports|Projects and Imports]].
 
 ## Related
 

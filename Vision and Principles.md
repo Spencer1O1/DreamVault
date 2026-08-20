@@ -68,11 +68,11 @@ Normal Dream and `dream now` therefore serve distinct purposes.
 
 Dream is not a prompt-to-app generator.
 
-It may understand prose-heavy source, but the language should encourage clear program intent rather than generic prompting.
+The programmer still writes the program.
+
+There is no required notation inside a `.foo` file.
 
 Dream is also not, in the current design, a formal language with a complete parser grammar.
-
-Recommended syntax is a convention.
 
 ## Deterministic Structure Around Fuzzy Meaning
 

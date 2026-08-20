@@ -98,7 +98,7 @@ The important invariant is:
 Example function:
 
 ```text
-// users/active.foo
+users/active.foo
 
 input is a list of users
 
@@ -108,7 +108,7 @@ return only the users whose active field is true
 Example type:
 
 ```text
-// models/user.foo
+models/user.foo
 
 a User has:
     name: text
@@ -119,7 +119,7 @@ a User has:
 Example entrypoint:
 
 ```text
-// main.foo
+main.foo
 
 import "./users/load.foo"
 import "./users/active.foo"
