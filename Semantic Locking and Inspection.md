@@ -1,4 +1,4 @@
-**Status:** Later (Phase 10). Needs provenance (Phase 8).  
+**Status:** Lock/unlock is current (Phase 10). Inspect is later.  
 **Purpose:** Persist accepted target realizations for `.foo` units and make that state inspectable.
 
 There is **no** `redream` command. Normal `dream` is the reconcile. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
@@ -10,7 +10,7 @@ There is **no** `redream` command. Normal `dream` is the reconcile. See [[Projec
 Before Gimbal, a lock is **target-specific**.
 
 ```bash
-dream lock server.foo -t rust
+dream lock server.foo -t rust -o ./out
 ```
 
 Means: preserve the currently accepted artifact set **and contents** for that unit in that target.
@@ -36,7 +36,7 @@ See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
 ## Unlock
 
 ```bash
-dream unlock server.foo -t rust
+dream unlock server.foo -t rust -o ./out
 ```
 
 Then a normal `dream` may recompose that unit.

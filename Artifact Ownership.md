@@ -1,4 +1,4 @@
-**Status:** Current compose contract through Phase 9. Phase 10 (locks) is still next.  
+**Status:** Current compose contract through Phase 10.  
 **Purpose:** Pre-Gimbal target artifact ownership, in-place reconciliation, and locks. Implementers should follow this plus [[Projects/Dream/Core Rules|Core Rules]]. Do not invent a target-independent IR.
 
 [[Projects/Dream/MVP|MVP]] is the historical v0 (replace `-o`, builder after writes). The crate no longer does that.
@@ -228,7 +228,7 @@ Not `--clean`. “Clean” already means “delete build artifacts” in too man
 Locks are **target-specific artifact locks**.
 
 ```bash
-dream lock server.foo -t rust
+dream lock server.foo -t rust -o ./out
 ```
 
 Freezes the current accepted artifact set **and contents** for that unit in that target. Normal `dream` must not let the Composer mutate them.

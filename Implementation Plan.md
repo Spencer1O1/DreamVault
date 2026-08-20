@@ -1,7 +1,7 @@
 **Status:** Phase list only. Do not track checkboxes here.  
-**Purpose:** Phases 1–9 are implemented. Next is target-specific locks (Phase 10). Not a formal semantic core.
+**Purpose:** Phases 1–10 are implemented. Next is skip unchanged unlocked units. Not a formal semantic core.
 
-The crate is a **separate workspace**, not this notes vault. `--lucid`: [[Projects/Dream/MVP|MVP]] interpreter. Compose: [[Projects/Dream/Artifact Ownership|Artifact Ownership]] through Phase 9. Progress is `docs/plan.md` in the crate.
+The crate is a **separate workspace**, not this notes vault. `--lucid`: [[Projects/Dream/MVP|MVP]] interpreter. Compose: [[Projects/Dream/Artifact Ownership|Artifact Ownership]] through Phase 10. Progress is `docs/plan.md` in the crate.
 
 ---
 
@@ -69,11 +69,13 @@ Done. Known builders: Dream owns manifests. `set_dependencies` takes `unit` plus
 
 ## Phase 10 — Target-Specific Locks
 
+Done.
+
 ```bash
-dream lock server.foo -t rust
+dream lock server.foo -t rust -o ./out
 ```
 
-Freeze that unit’s current target artifact set and source hash. Normal `dream` skips it. Source hash mismatch or missing locked artifact → error. Hand-edited locked files stay. No `redream` command.
+Freeze that unit’s current target artifact set and source hash. Normal `dream` skips it. Source hash mismatch or missing locked artifact → error. Hand-edited locked files stay. No `redream` command. `-o` is required; the store lives there.
 
 See [[Projects/Dream/Semantic Locking and Inspection|Semantic Locking and Inspection]].
 

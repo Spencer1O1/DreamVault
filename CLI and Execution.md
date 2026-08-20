@@ -263,13 +263,12 @@ Reset Dream’s realization: drop provenance, locks, and Dream-owned paths; dele
 
 ## Locks
 
-Not in v0. Next:
-
 ```bash
-dream lock server.foo -t rust
+dream lock server.foo -t rust -o ./out
+dream unlock server.foo -t rust -o ./out
 ```
 
-Freezes that unit’s current target artifact set. Normal `dream` does not mutate those files. No `redream` command.
+Freezes that unit’s current target artifact set and source hash in `-o`. Normal `dream` does not mutate those files. No `redream` command.
 
 ## `--release`
 

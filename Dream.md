@@ -1,6 +1,6 @@
 **Status:** Preliminary specification  
 **Name:** Dream  
-**Current stage:** Compose is [[Projects/Dream/Artifact Ownership|Artifact Ownership]] through Phase 9 (in-place, one session, writes name the unit, Dream owns manifests). `--lucid` still matches [[Projects/Dream/MVP|MVP]] interpreter behavior. Next: Phase 10 locks.
+**Current stage:** Compose is [[Projects/Dream/Artifact Ownership|Artifact Ownership]] through Phase 10 (in-place, one session, writes name the unit, Dream owns manifests, target-specific locks). `--lucid` still matches [[Projects/Dream/MVP|MVP]] interpreter behavior.
 
 Dream is a programming language for executable pseudocode.
 

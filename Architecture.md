@@ -28,7 +28,7 @@
                                       Builder / Runner
 ```
 
-Builder first and in-place reconcile are implemented. Locks and the project layer are next. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
+Builder first, in-place reconcile, the project layer, and target-specific locks are implemented. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
 
 A later formal semantic core is not part of it. See [[Projects/Dream/Later Formal Semantic Core|Later Formal Semantic Core]]. A later deterministic `now` runtime is also not part of it. See [[Projects/Dream/Later Interpreter Runtime|Later Interpreter Runtime]].
 
