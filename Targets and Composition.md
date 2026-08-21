@@ -51,13 +51,15 @@ If the Composer can generate it, generation may succeed.
 
 `-t` is an open-ended compose hint. A **toolchain** is a catalog row Dream will actually exec (`cargo`, `go`, `python`), not a language vibe (`cpp`, `embedded`). It is not “this language compiles.” Python is a row with no compile step.
 
-If `-t` **is** a catalog name or `unsupported`, that is the toolchain. Do not ask. The composer still gets the same `set_toolchain` result (`docs`, `project`, `entrypoint.path`). Fuzzy hints (`rust`, `cobol`, `embedded`) still ask `set_toolchain` before any output writes. After bind or pick, the store records the catalog row (`cargo`), not the hint. Compose sees the toolchain fact, not `Requested target`. A later `-t rust` on that store reuses `cargo` (no pick).
+If `-t` **is** a catalog name, that is the toolchain. Do not ask. The composer gets the same `set_toolchain` result (`docs`, `project`, `entrypoint.path`). Fuzzy hints (`rust`, `cobol`, `monkey_c`) still ask `set_toolchain` before any output writes. That pick turn sees only the requested target, not the entry `.foo` file. After bind or pick to a catalog row, the store records that row (`cargo`), not the hint. Compose sees the toolchain fact, not `Requested target`. A later `-t rust` on that store reuses `cargo` (no pick).
 
-Known toolchains later unlock Dream’s project layer. No pick, or `unsupported`, means Dream will not `--build`, `--run`, or repair. Composition may still succeed (generic unit-owned writes).
+`unsupported` is Dream’s exec slot, not a language. After pick to no row, compose still sees `Requested target` (`monkey_c`). The store records that `-t` string, not the word `unsupported`. `--build` / `--run` fail: Dream has no catalog row. No repair. No argv from the model. Literal `-t unsupported` is the empty language (no files required).
+
+Known toolchains later unlock Dream’s project layer. No catalog row means Dream will not `--build`, `--run`, or repair. Composition may still succeed (generic unit-owned writes).
 
 Do not infer the toolchain from the output tree. Do not take build or run argv from the model. Do not put `set_toolchain` in the write-loop catalog. The `set_toolchain` result is `docs`, `setup`, wipe-only `project`, read-only `configure` / `build` / `run`, and `entrypoint.path`. Dream execs those argv from the catalog.
 
-This list does not constrain `-t`. Vague targets (Arduino, COBOL, …) stay `unsupported` until that catalog row exists.
+This list does not constrain `-t`. Vague targets (Arduino, COBOL, Monkey C, …) have no catalog row until one exists. Compose still uses the requested target.
 
 If a known toolchain is declared but that program is not installed, Dream returns an error with a short install hint. It does not install it. `unsupported` means Dream has no catalog row; a missing `cargo` means the user does not have it. Python’s official names are `python`, `python3`, and `py` — not a user alias table.
 

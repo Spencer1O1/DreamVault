@@ -95,7 +95,7 @@ A unit may also own generated resources (`assets/generated-background.svg`). Man
 
 **Declare the toolchain before any output writes.** That turn is `set_toolchain` only — no `dream_error`, no write tools. v0 asked after the write loop; that is gone.
 
-The `set_toolchain` result is for the composer, not a knob. Dream execs configure / build / run from the catalog row. The result is `docs`, `setup` (writable project files), `project` (wipe-only), read-only `configure` / `build` / `run`, and `entrypoint.path`. Showing argv is allowed. Taking argv from the model is forbidden. Every catalog row sets `entry`. `{stem}` is the entry `.foo` stem, interpolated at the boundary (`hey-you.py`, `hey-you.go`, `hey-you.c`). Rows whose toolchain requires a fixed file keep that path (`src/main.rs`, `App.java`, `app.ml`, …). `unsupported` returns only the name.
+The `set_toolchain` result is for the composer, not a knob. Dream execs configure / build / run from the catalog row. The result is `docs`, `setup` (writable project files), `project` (wipe-only), read-only `configure` / `build` / `run`, and `entrypoint.path`. Showing argv is allowed. Taking argv from the model is forbidden. Every catalog row sets `entry`. `{stem}` is the entry `.foo` stem, interpolated at the boundary (`hey-you.py`, `hey-you.go`, `hey-you.c`). Rows whose toolchain requires a fixed file keep that path (`src/main.rs`, `App.java`, `app.ml`, …). `unsupported` is not a language. Compose still sees the requested target and may write unit files. Dream will not exec.
 
 ```text
 entry .foo
@@ -103,7 +103,7 @@ entry .foo
 set_toolchain (once)
     ↓
 known toolchain → Dream may init / load project-owned state
-unsupported     → compose still allowed; no --build / --run / repair
+no catalog row  → compose still allowed (requested target); no --build / --run / repair
     ↓
 reconcile units
     ↓
@@ -291,7 +291,7 @@ Dream does not generate language-specific wiring (`mod`, `import`, `package`, cr
 
 ### Unknown / `unsupported` targets
 
-Empty setup. All Composer writes are unit-owned. If the model writes `go.mod` / `CMakeLists.txt`, the **first writer** owns that path. A second unit cannot steal it. Dream does not interpret those files.
+`unsupported` means Dream will not exec, not “do not write files.” Empty setup. All Composer writes are unit-owned. The write-loop stack is `Requested target: …` (`monkey_c`), not `Toolchain unsupported`. The store records that `-t` string. If the model writes `go.mod` / `CMakeLists.txt`, the **first writer** owns that path. A second unit cannot steal it. Dream does not interpret those files.
 
 ---
 
@@ -299,7 +299,7 @@ Empty setup. All Composer writes are unit-owned. If the model writes `go.mod` / 
 
 Build runs **after** the composition session settles. A failed **pre-run** catalog step (configure or build) may repair. A failed run does not. A missing program does not.
 
-It is a new session with an empty stack: diagnostics plus the toolchain fact. Same toolchain. Writes stay in `-o`. The store toolchain is the catalog row (`cargo`), not a fuzzy `-t` target (`rust`).
+It is a new session with an empty stack: diagnostics plus the toolchain fact, or the requested target when there is no catalog row. Same bind. Writes stay in `-o`. The store toolchain is the catalog row (`cargo`) when there is one, or the `-t` string (`monkey_c`) when there is not.
 
 Allowed: overwrite a path that provenance already assigns to an **unlocked** unit; create or overwrite this row’s setup files when setup is not locked. The owner of an existing unit path is the map, not the model.
 
