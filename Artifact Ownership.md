@@ -58,7 +58,7 @@ Do not infer ownership from path shape. Use provenance.
 
 ## Provenance Map
 
-Dream must answer mechanically, per target and `-o`:
+Dream must answer mechanically, per toolchain and `-o`:
 
 - which artifacts came from this `.foo` unit?
 - which unit owns this generated path?
@@ -69,7 +69,7 @@ Dream must answer mechanically, per target and `-o`:
 Conceptually:
 
 ```text
-target: rust
+toolchain: cargo
 output: ./out
 
 units:
@@ -156,12 +156,12 @@ There is **no** `redream` command.
 dream app.foo -t rust -o ./out
 ```
 
-means: reconcile this source graph into the **existing** target project, respecting locks and ownership.
+means: reconcile this source graph into the **existing** output project, respecting locks and ownership.
 
 ```text
 declare toolchain
     ↓
-load existing target provenance
+load existing toolchain provenance
     ↓
 one composition session (entry is the root)
     ↓
@@ -203,9 +203,9 @@ Missing or empty `-o`: first writes register under the claimed unit.
 
 `-o` has files and Dream has no provenance store: **error**. Pass `--fresh` or use an empty directory. Do not silently claim the tree.
 
-### Target mismatch
+### Toolchain mismatch
 
-The store is for one target. If it says `rust` and the user passes `-t go`: **error** unless `--fresh`.
+The store is for one toolchain (the catalog row). If it says `cargo` and the user passes `-t go`: **error** unless `--fresh`. A fuzzy `-t rust` may reuse that `cargo` store.
 
 ### Where the store lives
 
@@ -219,7 +219,7 @@ A Dream-owned file in `-o` (not in the `.foo` tree): `.dream/provenance.json`. T
 dream app.foo -t rust -o ./out --fresh
 ```
 
-Reset this target realization and compose again. Ignore current provenance and target-specific locks.
+Reset this realization and compose again. Ignore current provenance and target-specific locks.
 
 Drop provenance, locks, and **Dream-owned** paths (unit + project), then delete `.dream/`. Also drop every catalog project path in `-o` (manifests, lockfiles, build dirs), even if the current store does not list them — so `--fresh -t go` does not keep `Cargo.toml`, `Cargo.lock`, or `target/`. Leave unmanaged files (`README.md`, `logo.png`, …) and source files not in the map. Those leftovers make the dest occupied on the next no-store open. The user can `rm -rf` `-o` if they want an empty folder.
 
@@ -285,9 +285,9 @@ The composer chooses the name in the setup file. Dream interpolates `{stem}` onl
 
 Python `--run` is `python {stem}.py` in `-o` (`my.foo` → `my.py`). Same stem. Dream does not rename a composed file. If that script is missing, run fails. Exec tries `python`, then `python3`, then `py`. The `set_toolchain` reply still says `python`.
 
-### How files find each other in the target
+### How files find each other
 
-Dream does not generate language-specific wiring (`mod`, `import`, `package`, crate roots, …). That is ordinary target source. The unit that owns the program entry (usually the Dream entry’s artifacts) writes whatever the target needs to see the other units’ files. Those paths come from reads and writes in the same session.
+Dream does not generate language-specific wiring (`mod`, `import`, `package`, crate roots, …). That is ordinary source. The unit that owns the program entry (usually the Dream entry’s artifacts) writes whatever the toolchain needs to see the other units’ files. Those paths come from reads and writes in the same session.
 
 ### Unknown / `unsupported` targets
 
@@ -299,7 +299,7 @@ Empty setup. All Composer writes are unit-owned. If the model writes `go.mod` / 
 
 Build runs **after** the composition session settles. A failed **pre-run** catalog step (configure or build) may repair. A failed run does not. A missing program does not.
 
-It is a new session with an empty stack: diagnostics plus the toolchain fact. Same toolchain. Writes stay in `-o`. The store target is the catalog row (`cargo`), not a fuzzy `-t` hint (`rust`).
+It is a new session with an empty stack: diagnostics plus the toolchain fact. Same toolchain. Writes stay in `-o`. The store toolchain is the catalog row (`cargo`), not a fuzzy `-t` target (`rust`).
 
 Allowed: overwrite a path that provenance already assigns to an **unlocked** unit; create or overwrite this row’s setup files when setup is not locked. The owner of an existing unit path is the map, not the model.
 

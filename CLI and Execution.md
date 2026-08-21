@@ -125,7 +125,7 @@ dream app.foo -t kotlin
 dream app.foo -t zig
 ```
 
-Targets are open-ended strings.
+Targets are open-ended strings. A **toolchain** is the catalog row Dream execs after bind or pick (`cargo`, `go`, …). The store records that row, not the `-t` string.
 
 These should also be valid:
 

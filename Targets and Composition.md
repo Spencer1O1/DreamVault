@@ -51,7 +51,7 @@ If the Composer can generate it, generation may succeed.
 
 `-t` is an open-ended compose hint. A **toolchain** is a catalog row Dream will actually exec (`cargo`, `go`, `python`), not a language vibe (`cpp`, `embedded`). It is not “this language compiles.” Python is a row with no compile step.
 
-If `-t` **is** a catalog name or `unsupported`, that is the toolchain. Do not ask. The composer still gets the same `set_toolchain` result (`docs`, `project`, `entrypoint.path`). Fuzzy hints (`rust`, `cobol`, `embedded`) still ask `set_toolchain` before any output writes.
+If `-t` **is** a catalog name or `unsupported`, that is the toolchain. Do not ask. The composer still gets the same `set_toolchain` result (`docs`, `project`, `entrypoint.path`). Fuzzy hints (`rust`, `cobol`, `embedded`) still ask `set_toolchain` before any output writes. After bind or pick, the store records the catalog row (`cargo`), not the hint. Compose sees the toolchain fact, not `Requested target`. A later `-t rust` on that store reuses `cargo` (no pick).
 
 Known toolchains later unlock Dream’s project layer. No pick, or `unsupported`, means Dream will not `--build`, `--run`, or repair. Composition may still succeed (generic unit-owned writes).
 

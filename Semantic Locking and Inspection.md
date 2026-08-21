@@ -1,5 +1,5 @@
 **Status:** Lock/unlock and inspect are current.  
-**Purpose:** Persist accepted target realizations for `.foo` units and make that state inspectable.
+**Purpose:** Persist accepted realizations for `.foo` units and make that state inspectable.
 
 There is **no** `redream` command. Normal `dream` is the reconcile. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
 
@@ -17,7 +17,7 @@ dream lock Cargo.toml -t rust -o ./out
 A `.foo` lock preserves that unit’s accepted artifact set **and contents**. A setup file is locked by name. Same command. Independent. Any file the composer can write can be locked.
 
 ```text
-server.foo [locked for rust]
+server.foo [locked]
   → src/server.rs
   → src/routes.rs
 ```
@@ -107,7 +107,7 @@ Human stdout. No LLM. The store is dest-specific, so `-t` and `-o` are required,
 
 A `.foo` path prints that unit: status (`missing` / `unlocked` / `locked` / `stale` / `invalid`), whether a lock's source hash matches, owned files, dependencies.
 
-`.` (a directory) summarizes the dest: target, optional `dream.toml` name and entry, project-owned paths, then every unit.
+`.` (a directory) summarizes the output: toolchain, optional `dream.toml` name and entry, project-owned paths, then every unit.
 
 Inspect does not compose, lock, or unlock.
 
