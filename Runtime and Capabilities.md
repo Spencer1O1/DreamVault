@@ -29,7 +29,7 @@ Chat text is discarded. It is not program output.
 
 ## Three Tool Families
 
-Do not give one `write_file` to every mode.
+Same names are fine. The implementations are not. Interpreter `read_file` / `write_file` are data files. Composer `read_file` / `write_file` are dest. Do not share one implementation across modes.
 
 ### Source — both `--lucid` and compose
 
@@ -59,33 +59,32 @@ If the program's meaning is to produce a result (`return the first five`), send 
 
 `stdin` reads real stdin. It may block. EOF is fine in non-interactive use.
 
-Later, same family:
+Same family, current:
 
 ```text
+list_files
 read_file
 write_file
 http_request
 ```
 
-Still executed by Dream. Still sandboxed. Not in v0. `http_request` here is the **program** reaching the network, not the composer researching docs.
-
-If a v0 program needs a data file or the network, `DreamError`. Do not invent `users.json`.
+Still executed by Dream. Still sandboxed to the project root. Not composer writes. Not `.foo` files (`read_source_file` is the unit). Not `.dream/`. `http_request` is the **program** reaching the network, not the composer researching docs. Official language docs are the catalog `docs` URL on `set_toolchain`. Composer fetch (MCP / indexes) is later. See [[Projects/Dream/Later Composer Tools|Later Composer Tools]].
 
 ### Composer — default mode only
 
 ```text
-write_output_file(unit, path, contents)
-remove_output_file(unit, path)
-set_dependencies(unit, dependencies)
+read_file(path)
+write_file(unit, path, contents)
+remove_file(unit, path)
 ```
 
-Writes in place. `unit` is the project-relative `.foo` that owns the path. Dream checks the claim. `set_dependencies` is for known toolchains only; Dream owns the manifest. Project-owned paths from the toolchain must not be modified; writes and removes of those paths are rejected. Unmanaged paths are rejected. `write_output_file` is a whole-file replace. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
+Writes in place. `unit` is the project-relative `.foo` that owns the path, except this toolchain’s setup files (no unit). Dream checks the claim. Setup paths on the catalog row are project-owned and composer-writable. Lockfiles and build dirs are not. Unmanaged paths are rejected. `write_file` is a whole-file replace. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
 
 Later, same composer side: research tools (indexes, docs) and targeted / LSP edits. Not built. Not interpreter runtime. See [[Projects/Dream/Later Composer Tools|Later Composer Tools]].
 
 The Composer does not run the program. It does not get `stdout`, `stdin`, or data-file tools.
 
-The Interpreter does not get `write_output_file`.
+The Interpreter does not get composer dest writes.
 
 ## Source Requests Are Not Runtime File Access
 

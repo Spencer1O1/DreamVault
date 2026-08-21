@@ -135,7 +135,7 @@ These checks happen while units are being dreamed, not by parsing a formal prelu
 
 Dream should identify a project root.
 
-Eventually projects may use:
+Projects may use:
 
 ```text
 dream.toml
@@ -149,7 +149,7 @@ name = "my-project"
 entry = "main.foo"
 ```
 
-A manifest is not required for the earliest prototype.
+`dream.toml` is optional when the invocation is a `.foo` file. A directory (`dream .`) requires `[project] entry`. `name` is display-only.
 
 ## Related
 

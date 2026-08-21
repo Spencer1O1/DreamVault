@@ -17,7 +17,7 @@
 
 ## Composition Rule
 
-> **The Composer realizes `.foo` units. Dream's project layer owns infrastructure. Dream execs the declared toolchain.**
+> **The Composer realizes `.foo` units. Dream owns exec, wipe of lockfiles and build dirs, and `.dream/`. Setup paths are project-owned and composer-writable.**
 
 ## Target Rule
 
@@ -55,7 +55,7 @@ Do not require one `.foo` file to map to one generated file.
 
 ## Project Artifact Rule
 
-> **Dream owns project infrastructure. The Composer does not edit those files directly.**
+> **Setup files are project-owned. The catalog is the allowlist. The Composer writes those files. The Composer does not create dest files with no owner.**
 
 ## Unmanaged Artifact Rule
 
@@ -69,15 +69,15 @@ There is no `redream` command. `--fresh` is the destructive regenerate.
 
 ## Pre-Gimbal Lock Rule
 
-> **Before Gimbal, locking a `.foo` unit freezes its current target-specific artifact set.**
+> **Before Gimbal, locking a `.foo` unit freezes its current target-specific artifact set. Lock a setup file by name. Any file the composer can write can be locked.**
 
 After Gimbal, locks freeze target-independent formal meaning. Do not fake that IR now.
 
 ## Incremental Semantics
 
-> **Only unlocked units that need reconciliation should be recomposed.**
+> **Lock if a unit must not change. Unlocked units may be recomposed when the user runs compose. The composer may leave them alone.**
 
-Normal `dream` is that operation.
+Normal `dream` is that operation. Do not skip an unlocked unit because its source hash matches.
 
 ## Persistent Meaning
 

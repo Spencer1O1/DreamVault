@@ -1,4 +1,4 @@
-**Status:** Lock/unlock is current (Phase 10). Inspect is later.  
+**Status:** Lock/unlock and inspect are current.  
 **Purpose:** Persist accepted target realizations for `.foo` units and make that state inspectable.
 
 There is **no** `redream` command. Normal `dream` is the reconcile. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
@@ -11,9 +11,10 @@ Before Gimbal, a lock is **target-specific**.
 
 ```bash
 dream lock server.foo -t rust -o ./out
+dream lock Cargo.toml -t rust -o ./out
 ```
 
-Means: preserve the currently accepted artifact set **and contents** for that unit in that target.
+A `.foo` lock preserves that unit’s accepted artifact set **and contents**. A setup file is locked by name. Same command. Independent. Any file the composer can write can be locked.
 
 ```text
 server.foo [locked for rust]
@@ -37,9 +38,10 @@ See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
 
 ```bash
 dream unlock server.foo -t rust -o ./out
+dream unlock Cargo.toml -t rust -o ./out
 ```
 
-Then a normal `dream` may recompose that unit.
+Then a normal `dream` may recompose that unit or rewrite that setup file.
 
 `--fresh` ignores target-specific locks.
 
@@ -74,7 +76,7 @@ If a requested dependency later becomes unusable (missing file, broken interface
 
 The programmer can still edit `server.foo`.
 
-If source and lock diverge, Dream should report the unit as stale rather than silently pretending they match. First lock CLI does not have to implement inspect.
+If source and lock diverge, Dream should report the unit as stale rather than silently pretending they match. `dream inspect` reports that. Compose of a locked unit whose hash no longer matches is still an error.
 
 ---
 
@@ -94,17 +96,20 @@ Exact state design can evolve. Do not persist a speculative enum before lock CLI
 
 ---
 
-## Inspecting (Later)
+## Inspecting
 
 ```bash
-dream inspect server.foo
+dream inspect server.foo -t rust -o ./out
+dream inspect . -t rust -o ./out
 ```
 
-could show path, source unchanged?, lock, artifact set, dependencies.
+Human stdout. No LLM. The store is dest-specific, so `-t` and `-o` are required, same as lock.
 
-`dream inspect .` could summarize the project.
+A `.foo` path prints that unit: status (`missing` / `unlocked` / `locked` / `stale` / `invalid`), whether a lock's source hash matches, owned files, dependencies.
 
-Not required for Phase 10.
+`.` (a directory) summarizes the dest: target, optional `dream.toml` name and entry, project-owned paths, then every unit.
+
+Inspect does not compose, lock, or unlock.
 
 ---
 

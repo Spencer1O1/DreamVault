@@ -5,19 +5,19 @@
 
 ## Project Invocation
 
-Dream should eventually support both:
+Both work:
 
 ```bash
-dream main.foo -t rust
+dream main.foo -t rust -o ./out
 ```
 
 and:
 
 ```bash
-dream . -t rust
+dream . -t rust -o ./out
 ```
 
-When passed a project directory, Dream resolves the configured entrypoint.
+When passed a project directory, Dream resolves `dream.toml` `[project] entry`. A `.foo` path does not need the file. Compose still requires `-o`.
 
 ## Primary CLI
 
@@ -266,9 +266,13 @@ Reset Dream’s realization: drop provenance, locks, Dream-owned paths, and ever
 ```bash
 dream lock server.foo -t rust -o ./out
 dream unlock server.foo -t rust -o ./out
+dream lock Cargo.toml -t rust -o ./out
+dream unlock Cargo.toml -t rust -o ./out
+dream inspect server.foo -t rust -o ./out
+dream inspect . -t rust -o ./out
 ```
 
-Freezes that unit’s current target artifact set and source hash in `-o`. Normal `dream` does not mutate those files. No `redream` command.
+Lock a `.foo` file to freeze the source files it produced. Lock a setup file by name (`Cargo.toml`, `go.mod`, …). Same command. Normal `dream` does not mutate locked files. No `redream` command. Inspect prints dest state to stdout. No LLM.
 
 ## `--release`
 

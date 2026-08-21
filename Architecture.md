@@ -89,7 +89,7 @@ continue
 
 Do not emit a finished target project, or treat a unit as fully dreamed, until that unit's source requests have settled.
 
-A later run can skip the loop when the unit's source hash still matches a recorded dependency set.
+Lock if a unit must not change. Unlocked units may be recomposed. The composer may leave them alone.
 
 ## The Composer
 

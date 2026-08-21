@@ -21,7 +21,7 @@ No LLM is needed to answer that question.
 
 If the hash has not changed, Dream can know that the source text itself is unchanged without invoking the model.
 
-This is the first level of cache validity.
+That is for locks and later invalidation. It is not a reason to skip the composer. An unlocked unit may be recomposed when the user runs compose. The composer may leave owned files alone.
 
 ## Semantic Cache
 
@@ -89,7 +89,7 @@ There is **no** `redream` command. Normal `dream` reconciles the graph: locked u
 
 Because `.foo` files are semantic atoms, that boundary is deterministic.
 
-First reconcile (Phase 8) may recompose every unlocked unit. Skipping unchanged source hashes is later.
+Normal compose may recompose every unlocked unit the session reaches. Lock if it must not change. Do not skip unlocked units on a matching source hash.
 
 ## Incremental Semantics
 

@@ -1,5 +1,5 @@
 **Status:** Wanted. Not built.  
-**Purpose:** Composer research and targeted edits. Do not start either while compose is still settling. Do not treat these as implied by optional `version` or by `write_output_file`.
+**Purpose:** Composer research and targeted edits. Do not start either while compose is still settling. Do not treat these as implied by optional `version` or by `write_file`.
 
 ---
 
@@ -9,11 +9,13 @@ These are **composer** tools. They are not `--lucid` runtime. Interpreter `http_
 
 ## Research
 
-The composer will need tools that reach the internet: package indexes, language docs, examples.
+The composer will need tools that reach the internet: package indexes, language docs, examples. MCP is the right later shape: Dream-owned, sandboxed fetch. Not a generic “get docs of a language” tool, and not lucid `http_request`.
+
+Each catalog row already returns its official **docs URL** on `set_toolchain`. That is a locator, not a fetch.
 
 That is how the model looks up an API or a current package version. It is **not** a Dream version resolver.
 
-An omitted `set_dependencies` version stays **unconstrained**. Dream does not look up “current” and pin it. A later compose can resolve to a different package. Pin when the written code needs a known API.
+The composer writes versions into the setup file. Dream does not look up “current” and pin it.
 
 Research results come back as tool output. Dream sandboxes the fetch. The model decides when to ask.
 
@@ -21,7 +23,7 @@ Do not add crates.io / pkg.go.dev / docs lookup as hidden compose behavior.
 
 ## Targeted edits
 
-`write_output_file` stays a whole-file replace. One path, one body. Repair overwrites that body.
+`write_file` stays a whole-file replace. One path, one body. Repair overwrites that body.
 
 Later: patch or LSP-shaped tools so the model can change part of a file instead of rewriting it.
 

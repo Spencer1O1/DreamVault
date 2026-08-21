@@ -66,11 +66,11 @@ A programmer can look at the folder. The model may do the same. It must not gues
 
 v0 has no data-file or network tools. If the program needs `users.json` or HTTP, `DreamError`. Do not invent file contents.
 
-Later, same family: `read_file`, `write_file`, `http_request`. Still executed by Dream. Still sandboxed.
+Same family, now in the crate: `list_files`, `read_file`, `write_file`, `http_request`. Still executed by Dream. Still sandboxed.
 
 ### Composer — default mode only
 
-`write_output_file(path, contents)`
+`write_file(path, contents)`
 
 - **v0:** writes into a staging directory for `-o`
 - path must stay under the output root
@@ -80,7 +80,7 @@ Later, same family: `read_file`, `write_file`, `http_request`. Still executed by
 
 The Composer does not get `stdout`, `stdin`, or data-file tools. It is writing a project, not running the program.
 
-The Interpreter does not get `write_output_file`.
+The Interpreter does not get composer dest writes.
 
 ## Settle Rule
 
@@ -112,7 +112,7 @@ Keep them short.
 
 Interpreter: you execute this Dream program. Request source instead of inventing other `.foo` files. Send all observable results through `stdout`. Do not chat. Do not invent I/O.
 
-Composer: you write a complete, hand-maintainable target project under `-o`. Request source instead of inventing other `.foo` files. Write files only through `write_output_file`. Do not execute the program. Do not chat.
+Composer: you write a complete, hand-maintainable target project under `-o`. Request source instead of inventing other `.foo` files. Write files only through `write_file`. Do not execute the program. Do not chat.
 
 `--strict` adds: do not guess important semantics; return a `DreamError` instead.
 

@@ -1,7 +1,7 @@
 **Status:** Phase list only. Do not track checkboxes here.  
-**Purpose:** Phases 1–10 are implemented. Next is skip unchanged unlocked units. Not a formal semantic core.
+**Purpose:** Phases 1–10 are implemented. Not a formal semantic core. Do not skip unlocked units on a matching source hash; lock is the skip.
 
-The crate is a **separate workspace**, not this notes vault. `--lucid`: [[Projects/Dream/MVP|MVP]] interpreter. Compose: [[Projects/Dream/Artifact Ownership|Artifact Ownership]] through Phase 10. Progress is `docs/plan.md` in the crate.
+The crate is a **separate workspace**, not this notes vault. `--lucid`: [[Projects/Dream/MVP|MVP]] interpreter plus sandboxed data files and HTTP. Compose: [[Projects/Dream/Artifact Ownership|Artifact Ownership]] through Phase 10, then inspect / `dream.toml` / catalog. Progress is `docs/plan.md` in the crate.
 
 ---
 
@@ -38,7 +38,7 @@ src/
 ├── composer/
 ├── toolchain/
 ├── provenance/    # unit → target artifacts; not an IR
-└── project/       # known-toolchain manifest layer
+└── dest/          # Dream-owned files under -o (not source/, not exec)
 ```
 
 Do not add a `semantics/` / Gimbal layer until that work is actually started.
@@ -49,7 +49,7 @@ Interpreter, multi-file, compose (replace `-o`), known toolchains (asked **befor
 
 ## Phase 7 — Toolchain First
 
-Done. Ask `set_toolchain` once **before** output writes. That turn is `set_toolchain` only. `-t` stays an open-ended hint. `unsupported` / no pick → compose only.
+Done. If `-t` is a catalog name or `unsupported`, that is the toolchain — do not ask. Fuzzy hints still ask `set_toolchain` once **before** output writes. That turn is `set_toolchain` only. `unsupported` / no pick → compose only.
 
 See [[Projects/Dream/Targets and Composition|Targets and Composition]].
 
@@ -65,7 +65,7 @@ See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
 
 ## Phase 9 — Project Layer
 
-Done. Known toolchains: Dream owns manifests. `set_dependencies` takes `unit` plus names, optional version, and optional features. Package name from entry stem on init only. Dream does not generate target-language wiring. `unsupported`: first writer owns manifest-shaped files.
+Superseded. Composer writes this row’s setup files. Dream does not write manifests and has no `set_dependencies`. Dream does not generate target-language wiring. `unsupported`: first writer owns dest files. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
 
 ## Phase 10 — Target-Specific Locks
 
@@ -78,6 +78,10 @@ dream lock server.foo -t rust -o ./out
 Freeze that unit’s current target artifact set and source hash. Normal `dream` skips it. Source hash mismatch or missing locked artifact → error. Hand-edited locked files stay. No `redream` command. `-o` is required; the store lives there.
 
 See [[Projects/Dream/Semantic Locking and Inspection|Semantic Locking and Inspection]].
+
+## After Phase 10 — Catalog, Inspect, Project File, Lucid I/O
+
+Done in the crate. Full catalog rows (exec + setup + wipe + docs URL). `dream inspect` and `dream.toml` `[project] name` / `entry`. Lucid `list_files` / `read_file` / `write_file` / `http_request`.
 
 ## Later — Unchanged-Unit Skip
 
@@ -93,7 +97,7 @@ See [[Projects/Dream/Later Composer Tools|Later Composer Tools]].
 
 ## Later — Targeted Edits
 
-Wanted. Patch or LSP-shaped tools so the composer can change part of a file. `write_output_file` stays whole-file replace until that work starts.
+Wanted. Patch or LSP-shaped tools so the composer can change part of a file. `write_file` stays whole-file replace until that work starts.
 
 See [[Projects/Dream/Later Composer Tools|Later Composer Tools]].
 

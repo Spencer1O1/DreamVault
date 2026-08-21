@@ -40,11 +40,11 @@ Every path under `-o` is one of:
 
 ```text
 1. Unit-owned     — Composer realization of one .foo unit
-2. Project-owned  — Dream’s target project layer (manifests, glue)
+2. Project-owned  — this toolchain’s setup files (composer-writable) plus lockfiles and build dirs (wipe only)
 3. Unmanaged      — no Dream provenance; user-owned by default
 ```
 
-Each catalog toolchain lists its **project files**: the manifest Dream writes, plus lockfiles, build dirs, and toolchain binaries (`Cargo.lock`, `target/`, `go.sum`, the Go `{stem}` / `{stem}.exe` from `go build`, …). Those are project-owned for wipe. They are not Composer artifacts and not in the provenance map. Do not guess names at scan time — the catalog is the list. With no provenance store, any file outside `.dream/` means `-o` is occupied (`--fresh` or an empty directory).
+Each catalog toolchain lists **setup** (composer may write: `Cargo.toml`, `go.mod`, …) and **project** wipe-only paths (lockfiles, build dirs). Both are project-owned. They are not unit artifacts. Do not guess names at scan time — the catalog is the list. With no provenance store, any file outside `.dream/` means `-o` is occupied (`--fresh` or an empty directory).
 
 ```text
 owner = Unit(path)
@@ -95,7 +95,7 @@ A unit may also own generated resources (`assets/generated-background.svg`). Man
 
 **Declare the toolchain before any output writes.** That turn is `set_toolchain` only — no `dream_error`, no write tools. v0 asked after the write loop; that is gone.
 
-The `set_toolchain` result is how Dream execs that catalog row. `run.argv` is the start command. `build.argv` is present only when there is a compile step (python omits it). `project` is every dest path that row owns (manifest, lockfiles, build dirs). If Dream owns the dest entry path (python: `{entry-stem}.py`), the result includes `entry`. Cargo/Go have no `entry` — their toolchains find the program. `unsupported` returns only the name.
+The `set_toolchain` result is for the composer, not a knob. Dream execs configure / build / run from the catalog row. The result is `docs`, `setup` (writable project files), `project` (wipe-only), read-only `configure` / `build` / `run`, and `entrypoint.path`. Showing argv is allowed. Taking argv from the model is forbidden. Every catalog row sets `entry`. `{stem}` is the entry `.foo` stem, interpolated at the boundary (`hey-you.py`, `hey-you.go`, `hey-you.c`). Rows whose toolchain requires a fixed file keep that path (`src/main.rs`, `App.java`, `app.ml`, …). `unsupported` returns only the name.
 
 ```text
 entry .foo
@@ -127,7 +127,7 @@ A write names the `.foo` unit it belongs to. It may create, update, or delete on
 Reject:
 
 - overwrite of another unit’s artifact;
-- overwrite of a project-owned file (use a project tool);
+- overwrite of a wipe-only project path;
 - overwrite of an unmanaged file (unless a later explicit user grant exists).
 
 The Composer must not silently steal ownership.
@@ -180,22 +180,22 @@ Normal `dream` must **not** `rm -rf` `-o`.
 
 A `.foo` never read from the entry is not composed. Its artifacts stay.
 
-Skipping unchanged hashes is later.
+Do not skip an unlocked unit because its source hash matches. Lock if it must not change. The composer may leave owned files alone.
 
 ### Writes name the unit
 
-`write_output_file` / `remove_output_file` take `unit` (project-relative `.foo`). Dream checks the claim:
+`write_file` / `remove_file` take `unit` (project-relative `.foo`). Dream checks the claim:
 
 - the unit exists in the project;
 - the unit is the entry or was read this run;
 - the unit is not locked;
-- the path is not stolen, project-owned, or unmanaged (unless `--fresh`).
+- the path is not stolen, wipe-only, or unmanaged (unless `--fresh`). Setup paths on this row do not take a unit.
 
-Ownership is never inferred from the last read or from the entry. The write-loop preamble states that project-owned paths from the toolchain must not be modified. Write and remove tool text does not repeat that.
+Ownership is never inferred from the last read or from the entry. The write-loop preamble states that the composer writes setup files and must not write wipe paths. Write and remove tool text does not repeat that.
 
 When the session settles, Dream reconciles each unit that wrote this run.
 
-`write_output_file` is a whole-file replace. Targeted / LSP edits are later. See [[Projects/Dream/Later Composer Tools|Later Composer Tools]].
+`write_file` is a whole-file replace. Targeted / LSP edits are later. See [[Projects/Dream/Later Composer Tools|Later Composer Tools]].
 
 ### No provenance
 
@@ -233,11 +233,12 @@ Locks are **target-specific artifact locks**.
 
 ```bash
 dream lock server.foo -t rust -o ./out
+dream lock Cargo.toml -t rust -o ./out
 ```
 
-Freezes the current accepted artifact set **and contents** for that unit in that target. Normal `dream` must not let the Composer mutate them.
+Lock a `.foo` file to freeze the source files it produced. Lock a setup file by name. Same `dream lock`. Those locks are independent. Any file the composer can write can be locked. Normal `dream` must not let the Composer mutate locked files.
 
-Source-oriented: the user locks the `.foo` file, not each generated path.
+Source-oriented: the user locks the `.foo` file, not each generated path. Setup has no `.foo`; name the file.
 
 To recompose a locked unit: unlock it, then run normal `dream`. Or `--fresh`.
 
@@ -274,23 +275,13 @@ After Gimbal, a lock should freeze formal meaning; provenance still tracks the t
 
 ## Project Layer
 
-Project-owned files (`Cargo.toml`, `go.mod`, `pyproject.toml`) are **not** freeform LLM rewrites.
+Setup files (`Cargo.toml`, `go.mod`, `package.json`) are **this row’s allowlist**. The composer writes them. They are not owned by a `.foo`. Lock them by name (`dream lock Cargo.toml`). Wipe-only paths (`target/`, `Cargo.lock`) are project-owned and not writable.
 
-### `set_dependencies`
-
-One tool. It takes `unit` (project-relative `.foo`) plus that unit’s full dependency list. Dream checks the same ownership as a write: the unit exists and is the entry or was read this run. The list **replaces** that unit’s dependencies when the session settles. Units that do not call it keep their previous list.
-
-Each entry is a **package name**, optional **version**, and optional **features**. Dream writes the manifest. Conflicting versions for the same package fail at union. A pin plus an omitted version uses the pin. An omitted version is unconstrained (`*` for Cargo; no `require` stub for Go). Unconstrained is not “current”: Dream does not look up latest and pin it. Looking up APIs and package versions is later research tools. See [[Projects/Dream/Later Composer Tools|Later Composer Tools]].
-
-Project deps are the union of every unit’s list. Dream retracts a dep only if Dream installed it and no unit still lists it. User-added deps with no unit listing stay.
-
-No `list_*` / `add_*` / `remove_*` dep tools. Do not call them imports. The composer does not read `Cargo.toml`.
-
-Repair rejects `set_dependencies`.
+`read_file` may read unit-owned dest files and this row’s setup files.
 
 ### Package name
 
-On first init of a known toolchain, Dream sets the package name from the **entry file stem** (`multifile.foo` → `multifile`). Not a tool. Later reconciles do not overwrite an existing name (a user rename stays).
+The composer chooses the name in the setup file. Dream interpolates `{stem}` only for `entrypoint.path`.
 
 Python `--run` is `python {stem}.py` in `-o` (`my.foo` → `my.py`). Same stem. Dream does not rename a composed file. If that script is missing, run fails. Exec tries `python`, then `python3`, then `py`. The `set_toolchain` reply still says `python`.
 
@@ -300,27 +291,26 @@ Dream does not generate language-specific wiring (`mod`, `import`, `package`, cr
 
 ### Unknown / `unsupported` targets
 
-No project layer and no `set_dependencies`. All Composer writes are unit-owned. If the model writes `go.mod` / `CMakeLists.txt`, the **first writer** owns that path. A second unit cannot steal it. Dream does not interpret those files.
+Empty setup. All Composer writes are unit-owned. If the model writes `go.mod` / `CMakeLists.txt`, the **first writer** owns that path. A second unit cannot steal it. Dream does not interpret those files.
 
 ---
 
 ## Repair
 
-Build runs **after** the composition session settles. Repair does not pick a unit by guessing from rustc paths. The owner of an existing path is the map, not the model.
+Build runs **after** the composition session settles. A failed **pre-run** catalog step (configure or build) may repair. A failed run does not. A missing program does not.
 
-It is a new session with the toolchain diagnostics. Same toolchain. Writes stay in `-o`.
+It is a new session with an empty stack: diagnostics plus the toolchain fact. Same toolchain. Writes stay in `-o`. The store target is the catalog row (`cargo`), not a fuzzy `-t` hint (`rust`).
 
-Allowed: overwrite a path that provenance already assigns to an **unlocked** unit. The owner is the map, not the model.
+Allowed: overwrite a path that provenance already assigns to an **unlocked** unit; create or overwrite this row’s setup files when setup is not locked. The owner of an existing unit path is the map, not the model.
 
 Rejected:
 
-- new paths (repair does not grow the artifact set);
-- locked artifacts;
-- project-owned files;
-- unmanaged files;
-- `set_dependencies` (no current unit).
+- new unit-owned paths;
+- locked dest files;
+- wipe-only project paths;
+- unmanaged files.
 
-If the project needs a new file or a dep change, that is a normal `dream` (or `--fresh`), not repair. Repair only fixes what was already composed.
+If the project needs a new unit file, that is a normal `dream` (or `--fresh`), not repair.
 
 ---
 

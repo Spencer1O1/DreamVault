@@ -51,9 +51,11 @@ If the Composer can generate it, generation may succeed.
 
 `-t` is an open-ended compose hint. A **toolchain** is a catalog row Dream will actually exec (`cargo`, `go`, `python`), not a language vibe (`cpp`, `embedded`). It is not “this language compiles.” Python is a row with no compile step.
 
-Ask **before** any output writes. Known toolchains later unlock Dream’s project layer. No pick, or `unsupported`, means Dream will not `--build`, `--run`, or repair. Composition may still succeed (generic unit-owned writes).
+If `-t` **is** a catalog name or `unsupported`, that is the toolchain. Do not ask. The composer still gets the same `set_toolchain` result (`docs`, `project`, `entrypoint.path`). Fuzzy hints (`rust`, `cobol`, `embedded`) still ask `set_toolchain` before any output writes.
 
-Do not infer the toolchain from the output tree. Do not take build or run argv from the model. Do not put `set_toolchain` in the write-loop catalog. The `set_toolchain` result tells the model how Dream execs that row: `run.argv`, optional `build.argv`, `project` for every dest path that row owns, and `entry` when Dream owns the dest path.
+Known toolchains later unlock Dream’s project layer. No pick, or `unsupported`, means Dream will not `--build`, `--run`, or repair. Composition may still succeed (generic unit-owned writes).
+
+Do not infer the toolchain from the output tree. Do not take build or run argv from the model. Do not put `set_toolchain` in the write-loop catalog. The `set_toolchain` result is `docs`, `setup`, wipe-only `project`, read-only `configure` / `build` / `run`, and `entrypoint.path`. Dream execs those argv from the catalog.
 
 This list does not constrain `-t`. Vague targets (Arduino, COBOL, …) stay `unsupported` until that catalog row exists.
 
@@ -73,7 +75,7 @@ Core invariant:
 
 The Composer should not receive unrestricted shell or `-o` access.
 
-Writes only unit-owned artifacts in place. A write names the owning `.foo`. Manifests go through target-aware project tools (Phase 9). Unknown files stay. `--fresh` is the wipe. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
+Writes name the owning `.foo`, except this row’s setup files. Dream execs the catalog. Unknown files stay. `--fresh` is the wipe. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
 
 The Composer does not get `stdout`, `stdin`, or data-file tools. Those belong to `--lucid`.
 
@@ -97,7 +99,7 @@ build
 
 v0 still `replace -o` before the first build.
 
-Repair must use an explicit maximum number of attempts. The toolchain is not asked again. After provenance exists: repair runs with the stack empty; it may only overwrite existing unlocked unit-owned paths (owner from the map). No new files, no `set_dependencies`. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
+Repair must use an explicit maximum number of attempts. The toolchain is not asked again. After provenance exists: repair runs with the stack empty; it may overwrite existing unlocked unit-owned paths and this row’s setup files. No new unit files. See [[Projects/Dream/Artifact Ownership|Artifact Ownership]].
 
 ## Generated Project Is Not the Semantic IR
 
